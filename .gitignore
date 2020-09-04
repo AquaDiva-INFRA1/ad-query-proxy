@@ -1,0 +1,10 @@
+# Coverage report
+.coverage
+htmlcov
+
+__pycache__
+
+.pytype
+.tox/
+*.egg-info/
+.python-version
