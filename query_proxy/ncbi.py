@@ -8,7 +8,7 @@ Created on Mon Sep 21 13:37:22 2020
 
 import argparse
 from datetime import datetime
-from ftplib import FTP, error_perm
+from ftplib import FTP, error_perm, gaierror
 import hashlib
 import logging
 import os
@@ -38,8 +38,13 @@ class NCBI_Processor:
         self.logger.addHandler(fh)
 
     def list_ncbi_files(self, path: str) -> List[str]:
-        ftp = FTP(NCBI_SERVER)
+        try:
+            ftp = FTP(NCBI_SERVER, timeout=60)
+        except gaierror:
+            self.logger.error("Could nor resolve %s", NCBI_SERVER)
+            return []
         reply = ftp.login()
+
         if not reply.startswith("230"):
             self.logger.error("Could not log into %s: %s", NCBI_SERVER, reply)
             return []
