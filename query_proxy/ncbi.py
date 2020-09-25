@@ -151,9 +151,3 @@ if __name__ == "__main__":
     ARGS = PARSER.parse_args()
     Ncbi = NCBI_Processor()
     Ncbi.process_archives(ARGS.download_dir)
-
-ftp = FTP(NCBI_SERVER, timeout=12)
-try:
-    reply = ftp.login()
-except timeout as t:
-    print(t)
