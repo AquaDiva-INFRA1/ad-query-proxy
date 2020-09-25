@@ -6,12 +6,15 @@ Created on Mon Sep 21 13:37:22 2020
 @author: Bernd Kampe
 """
 
+import argparse
 from datetime import datetime
 from ftplib import FTP, error_perm
 import hashlib
 import logging
+from pathlib import Path
 import os
 import re
+import tempfile
 from typing import List
 
 import requests
@@ -19,7 +22,6 @@ import requests
 MD5_MATCHER = re.compile(b"MD5\(.+?\)= ([0-9a-fA-F]{32})")
 NCBI_SERVER = "ftp.ncbi.nlm.nih.gov"
 BASELINE_DIR = "pubmed/baseline"
-PATH = "."  # TODO: turn this into a parameter
 
 
 class NCBI_Processor:
@@ -49,7 +51,18 @@ class NCBI_Processor:
             return []
         return names
 
-    def process_archives(self):
+    def process_archives(self, path: Path):
+        cleanup = None
+        if not path.exists():
+            self.logger.warning("Directory %s did not exist, will be created.", path)
+            try:
+                path.mkdir(parents=True)
+            except PermissionError as e:
+                self.logger.error(e)
+                self.logger.warning("Downloaded archives will be stored in a temporary directory")
+                temp_dir = tempfile.TemporaryDirectory()
+                path = Path(temp_dir.name)
+                cleanup = temp_dir.cleanup
         filenames = self.list_ncbi_files(BASELINE_DIR)
         md5 = set(
             name[0]
@@ -71,14 +84,14 @@ class NCBI_Processor:
                 self.logger.warn("No md5 checksum available for %s", archive)
             archive_url = f"https://{NCBI_SERVER}/{BASELINE_DIR}/{archive}"
             r = requests.get(archive_url, stream=True)
-            with open(os.path.join(PATH, archive), "wb") as fd:
+            with open(os.path.join(path, archive), "wb") as fd:
                 for chunk in r.iter_content(chunk_size=1_048_576):
                     fd.write(chunk)
             r = requests.get(archive_url + ".md5")
             match = MD5_MATCHER.match(r.content)
             md5 = hashlib.md5()
             try:
-                with open(os.path.join(PATH, archive), "rb") as compare_this:
+                with open(os.path.join(path, archive), "rb") as compare_this:
                     block = compare_this.read(4096)
                     while len(block) != 0:
                         md5.update(block)
@@ -88,8 +101,13 @@ class NCBI_Processor:
             digest = md5.hexdigest()
             if digest != match.group(1):
                 pass
+        if not cleanup is None:
+            cleanup()
 
 
 if __name__ == "__main__":
+    PARSER = argparse.ArgumentParser("Process MEDLINE/PubMed archives")
+    PARSER.add_argument('download_dir', type=Path, help="Temporary storage directory of the archives")
+    ARGS = PARSER.parse_args()
     Ncbi = NCBI_Processor()
-    Ncbi.process_archives()
+    Ncbi.process_archives(ARGS.download_dir)
