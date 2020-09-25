@@ -84,7 +84,7 @@ class NCBI_Processor:
                         md5.update(block)
                         block = compare_this.read(4096)
             except Exception as e:
-                logging.error(e)
+                self.logger.error(e)
             digest = md5.hexdigest()
             if digest != match.group(1):
                 pass
