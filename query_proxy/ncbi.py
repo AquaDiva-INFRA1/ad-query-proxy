@@ -11,9 +11,10 @@ from datetime import datetime
 from ftplib import FTP, error_perm
 import hashlib
 import logging
-from pathlib import Path
 import os
+from pathlib import Path
 import re
+import shutil
 import tempfile
 from typing import List
 
@@ -59,7 +60,9 @@ class NCBI_Processor:
                 path.mkdir(parents=True)
             except PermissionError as e:
                 self.logger.error(e)
-                self.logger.warning("Downloaded archives will be stored in a temporary directory")
+                self.logger.warning(
+                    "Downloaded archives will be stored in a temporary directory"
+                )
                 temp_dir = tempfile.TemporaryDirectory()
                 path = Path(temp_dir.name)
                 cleanup = temp_dir.cleanup
@@ -78,7 +81,7 @@ class NCBI_Processor:
             and name[1]["type"] == "file"
             and name[0].endswith("xml.gz")
         )
-        
+
         done_file = Path("processed.log")
         if done_file.exists():
             with done_file.open("rt") as done:
@@ -88,6 +91,14 @@ class NCBI_Processor:
             processed = []
 
         for archive in archives:
+            total, _, free = shutil.disk_usage(".")
+            if free / total < 0.5:
+                self.logger.error(
+                    "Only %s percent of disk space left. Will not attempt to import %s. Stopping now.",
+                    "{:.2f}".format(free / total * 100),
+                    archive,
+                )
+                break
             if archive in processed:
                 continue
             if not archive + ".md5" in md5:
@@ -119,7 +130,9 @@ class NCBI_Processor:
 
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser("Process MEDLINE/PubMed archives")
-    PARSER.add_argument('download_dir', type=Path, help="Temporary storage directory of the archives")
+    PARSER.add_argument(
+        "download_dir", type=Path, help="Temporary storage directory of the archives"
+    )
     ARGS = PARSER.parse_args()
     Ncbi = NCBI_Processor()
     Ncbi.process_archives(ARGS.download_dir)
