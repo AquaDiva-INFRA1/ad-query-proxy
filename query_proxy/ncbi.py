@@ -15,6 +15,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+from socket import timeout
 import tempfile
 from typing import List
 
@@ -38,12 +39,17 @@ class NCBI_Processor:
         self.logger.addHandler(fh)
 
     def list_ncbi_files(self, path: str) -> List[str]:
+        TIMEOUT = 60
         try:
-            ftp = FTP(NCBI_SERVER, timeout=60)
+            ftp = FTP(NCBI_SERVER, timeout=TIMEOUT)
         except gaierror:
             self.logger.error("Could nor resolve %s", NCBI_SERVER)
             return []
-        reply = ftp.login()
+        try:
+            reply = ftp.login()
+        except timeout:
+            self.logger.error("Login attempt timed out after %d seconds.", TIMEOUT)
+            return []
 
         if not reply.startswith("230"):
             self.logger.error("Could not log into %s: %s", NCBI_SERVER, reply)
@@ -72,6 +78,10 @@ class NCBI_Processor:
                 path = Path(temp_dir.name)
                 cleanup = temp_dir.cleanup
         filenames = self.list_ncbi_files(BASELINE_DIR)
+        if not filenames:
+            self.logger.error("Getting the list of files from the server failed. Stopping now.")
+            return
+        
         md5 = set(
             name[0]
             for name in filenames
@@ -141,3 +151,9 @@ if __name__ == "__main__":
     ARGS = PARSER.parse_args()
     Ncbi = NCBI_Processor()
     Ncbi.process_archives(ARGS.download_dir)
+
+ftp = FTP(NCBI_SERVER, timeout=12)
+try:
+    reply = ftp.login()
+except timeout as t:
+    print(t)
