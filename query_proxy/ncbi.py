@@ -139,7 +139,8 @@ class NCBI_Processor:
                 self.logger.error(e)
             digest = md5.hexdigest()
             if digest != match.group(1):
-                pass
+                self.logger.warning("MD5 checksum of %s did not match. Expected: %s. Was: %s. Skipping the archive.", archive, digest, match.group(1))
+                continue
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
         if not cleanup is None:
