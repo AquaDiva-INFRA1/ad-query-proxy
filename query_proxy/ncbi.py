@@ -23,17 +23,17 @@ PATH = "."  # TODO: turn this into a parameter
 
 
 class NCBI_Processor:
-    
     def __init__(self):
-        self.logger = logging.getLogger('ncbi')
+        self.logger = logging.getLogger("ncbi")
         dt = datetime.now()
         fh = logging.FileHandler(f"{dt.strftime('%Y%m%d-%H%M%S')}.log")
         fh.setLevel(logging.WARNING)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
         fh.setFormatter(formatter)
         self.logger.addHandler(fh)
 
-    
     def list_ncbi_files(self, path: str) -> List[str]:
         ftp = FTP(NCBI_SERVER)
         reply = ftp.login()
@@ -48,9 +48,9 @@ class NCBI_Processor:
             self.logger.error("Could not retrieve list of files in %s: %s", path, e)
             return []
         return names
-    
-    
-    def process_archives(self, filenames: str):
+
+    def process_archives(self):
+        filenames = self.list_ncbi_files(BASELINE_DIR)
         md5 = set(
             name[0]
             for name in filenames
@@ -65,7 +65,7 @@ class NCBI_Processor:
             and name[1]["type"] == "file"
             and name[0].endswith("xml.gz")
         )
-    
+
         for archive in archives:
             if not archive + ".md5" in md5:
                 self.logger.warn("No md5 checksum available for %s", archive)
@@ -92,5 +92,4 @@ class NCBI_Processor:
 
 if __name__ == "__main__":
     Ncbi = NCBI_Processor()
-    names = Ncbi.list_ncbi_files(BASELINE_DIR)
-    Ncbi.process_archives(names)
+    Ncbi.process_archives()
