@@ -61,6 +61,9 @@ class NCBI_Processor:
         except error_perm as e:
             self.logger.error("Could not retrieve list of files in %s: %s", path, e)
             return []
+        except timeout:
+            self.logger.error("Listing the directory %s timed out after %d seconds.", path, TIMEOUT)
+            return []            
         return names
 
     def process_archives(self, path: Path):
