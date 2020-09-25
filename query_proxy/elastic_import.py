@@ -31,21 +31,20 @@ def setup():
 # Used to declare the structure of documents and to
 # initialize the Elasticsearch index with the correct data types
 class Bibdoc(Document):
-    entrytype = Keyword()
     author = Keyword(multi=True)
-    editor = Keyword(multi=True)
-    publisher = Keyword()
-    institution = Keyword()
     title = Text()
     abstract = Text()
-    keywords = Keyword()
-    year = Short()
-    date = Keyword()
-    pages = Keyword()
-    journal = Text()
     volume = Keyword()
-    number = Keyword()
-    doi = Keyword()
+    issue = Keyword()
+    pages = Keyword()
+    date = Keyword()
+    year = Short()
+    month = Keyword()
+    journal = Text()
+    pmid = Keyword()
+    mesh = Keyword()
+    version = Keyword()
+    url = Keyword()
     created_at = Date()
 
     class Index:
