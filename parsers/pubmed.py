@@ -185,6 +185,10 @@ def parse(source) -> Dict[str, str]:
                             logging.warning("Article %s should have had a title", pmid)
                             continue
 
+            pages = elem.find(".//Pagination/MedlinePgn")
+            if pages is not None and pages.text is not None:
+                article["pages"] = pages.text
+
             abstract = elem.find(".//Abstract")
             # Abstract is optional
             if abstract is not None and abstract.text is not None:
