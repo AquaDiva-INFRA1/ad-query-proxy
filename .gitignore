@@ -8,3 +8,6 @@ __pycache__
 .tox/
 *.egg-info/
 .python-version
+
+scripts/
+dev/
