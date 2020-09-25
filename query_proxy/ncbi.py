@@ -62,8 +62,10 @@ class NCBI_Processor:
             self.logger.error("Could not retrieve list of files in %s: %s", path, e)
             return []
         except timeout:
-            self.logger.error("Listing the directory %s timed out after %d seconds.", path, TIMEOUT)
-            return []            
+            self.logger.error(
+                "Listing the directory %s timed out after %d seconds.", path, TIMEOUT
+            )
+            return []
         return names
 
     def process_archives(self, path: Path):
@@ -82,9 +84,11 @@ class NCBI_Processor:
                 cleanup = temp_dir.cleanup
         filenames = self.list_ncbi_files(BASELINE_DIR)
         if not filenames:
-            self.logger.error("Getting the list of files from the server failed. Stopping now.")
+            self.logger.error(
+                "Getting the list of files from the server failed. Stopping now."
+            )
             return
-        
+
         md5 = set(
             name[0]
             for name in filenames
@@ -139,7 +143,12 @@ class NCBI_Processor:
                 self.logger.error(e)
             digest = md5.hexdigest()
             if digest != match.group(1):
-                self.logger.warning("MD5 checksum of %s did not match. Expected: %s. Was: %s. Skipping the archive.", archive, digest, match.group(1))
+                self.logger.warning(
+                    "MD5 checksum of %s did not match. Expected: %s. Was: %s. Skipping the archive.",
+                    archive,
+                    digest,
+                    match.group(1),
+                )
                 continue
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
