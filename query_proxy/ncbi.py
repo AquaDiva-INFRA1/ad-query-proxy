@@ -78,8 +78,18 @@ class NCBI_Processor:
             and name[1]["type"] == "file"
             and name[0].endswith("xml.gz")
         )
+        
+        done_file = Path("processed.log")
+        if done_file.exists():
+            with done_file.open("rt") as done:
+                processed = list(x.rstrip() for x in done)
+        else:
+            done_file.touch()
+            processed = []
 
         for archive in archives:
+            if archive in processed:
+                continue
             if not archive + ".md5" in md5:
                 self.logger.warn("No md5 checksum available for %s", archive)
             archive_url = f"https://{NCBI_SERVER}/{BASELINE_DIR}/{archive}"
@@ -101,6 +111,8 @@ class NCBI_Processor:
             digest = md5.hexdigest()
             if digest != match.group(1):
                 pass
+            with done_file.open("a") as done:
+                _ = done.write(f"{archive}\n")
         if not cleanup is None:
             cleanup()
 
