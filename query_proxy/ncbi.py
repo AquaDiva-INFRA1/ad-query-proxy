@@ -167,6 +167,7 @@ class NCBI_Processor:
                     self.logger.warning(action)
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
+            os.unlink(os.path.join(path, archive))
         if not cleanup is None:
             cleanup()
 
