@@ -8,7 +8,7 @@ Created on Mon Sep 21 13:37:22 2020
 
 import argparse
 from datetime import datetime
-from ftplib import FTP, error_perm, gaierror
+from ftplib import FTP, error_perm
 import gzip
 import hashlib
 import logging
@@ -48,7 +48,7 @@ class NCBI_Processor:
         TIMEOUT = 60
         try:
             ftp = FTP(NCBI_SERVER, timeout=TIMEOUT)
-        except gaierror:
+        except Exception:
             self.logger.error("Could nor resolve %s", NCBI_SERVER)
             return []
         try:
