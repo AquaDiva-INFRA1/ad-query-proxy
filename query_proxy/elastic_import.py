@@ -12,7 +12,7 @@ from elasticsearch_dsl import (
     Document,
     Date,
     Keyword,
-    Text,   
+    Text,
     Short,
     connections,
 )
