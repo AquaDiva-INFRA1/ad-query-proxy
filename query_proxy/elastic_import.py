@@ -8,7 +8,6 @@ Created on Mon Sep  7 13:13:14 2020
 
 from datetime import datetime
 
-
 from elasticsearch_dsl import (
     Document,
     Date,
@@ -18,15 +17,7 @@ from elasticsearch_dsl import (
     connections,
 )
 
-from config import read_config
-
-
-config = read_config()
-
-
-def setup():
-    conn = connections.create_connection(hosts=config["es_hosts"])
-
+INDEX = "pubmed"
 
 # Used to declare the structure of documents and to
 # initialize the Elasticsearch index with the correct data types
@@ -48,8 +39,13 @@ class Bibdoc(Document):
     created_at = Date()
 
     class Index:
-        name = config["index"]
+        name = INDEX
 
     def save(self, **kwargs):
         self.created_at = datetime.now()
         return super().save(**kwargs)
+
+def setup():
+    Bibdoc.init()
+    conn = connections.create_connection(hosts=["localhost"])
+    return conn
