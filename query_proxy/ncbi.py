@@ -21,7 +21,6 @@ import tempfile
 from typing import List
 
 import elasticsearch as es
-import elasticsearch.client.Elasticsearch
 import requests
 
 from elastic_import import setup, INDEX
