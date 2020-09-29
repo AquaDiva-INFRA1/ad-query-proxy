@@ -9,6 +9,7 @@ Created on Mon Sep 21 13:37:22 2020
 import argparse
 from datetime import datetime
 from ftplib import FTP, error_perm, gaierror
+import gzip
 import hashlib
 import logging
 import os
@@ -19,7 +20,12 @@ from socket import timeout
 import tempfile
 from typing import List
 
+import elasticsearch as es
+import elasticsearch.client.Elasticsearch
 import requests
+
+from elastic_import import setup, INDEX
+from parsers import pubmed
 
 MD5_MATCHER = re.compile(b"MD5\(.+?\)= ([0-9a-fA-F]{32})")
 NCBI_SERVER = "ftp.ncbi.nlm.nih.gov"
@@ -112,6 +118,7 @@ class NCBI_Processor:
             done_file.touch()
             processed = []
 
+        conn = setup()
         for archive in archives:
             total, _, free = shutil.disk_usage(".")
             if free / total < 0.5:
@@ -150,10 +157,32 @@ class NCBI_Processor:
                     match.group(1),
                 )
                 continue
+            for ok, action in es.helpers.streaming_bulk(
+                index="pubmed",
+                client=conn,
+                actions=index(archive),
+                raise_on_error=False,
+            ):
+                if not ok and action["index"]["status"] != 409:
+                    self.logger.warning(action)
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
         if not cleanup is None:
             cleanup()
+
+
+def index(archive: str):
+    with gzip.open(archive, "rt", encoding="utf-8") as data:
+        for entry in pubmed.parse(data):
+            doc = {
+                "_op_type": "index",
+                "_index": INDEX,
+                "_id": entry["PMID"],
+                "version": entry.pop("version", 1),
+                "version_type": "external",
+            }
+            doc["_source"] = entry
+            yield doc
 
 
 if __name__ == "__main__":
