@@ -46,6 +46,6 @@ class Bibdoc(Document):
         return super().save(**kwargs)
 
 def setup():
-    Bibdoc.init()
     conn = connections.create_connection(hosts=["localhost"])
+    Bibdoc.init(using=conn)
     return conn
