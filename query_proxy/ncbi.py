@@ -160,7 +160,7 @@ class NCBI_Processor:
             for ok, action in es.helpers.streaming_bulk(
                 index="pubmed",
                 client=conn,
-                actions=index(archive),
+                actions=index(os.path.join(path, archive)),
                 raise_on_error=False,
             ):
                 if not ok and action["index"]["status"] != 409:
