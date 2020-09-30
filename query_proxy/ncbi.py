@@ -21,6 +21,7 @@ import tempfile
 from typing import List
 
 import elasticsearch as es
+from elasticsearch.exceptions import ConnectionTimeout
 import requests
 
 from elastic_import import setup, INDEX
@@ -156,14 +157,19 @@ class NCBI_Processor:
                     digest,
                 )
                 continue
-            for ok, action in es.helpers.streaming_bulk(
-                index="pubmed",
-                client=conn,
-                actions=index(os.path.join(path, archive)),
-                raise_on_error=False,
-            ):
-                if not ok and action["index"]["status"] != 409:
-                    self.logger.warning(action)
+            try:
+                for ok, action in es.helpers.streaming_bulk(
+                    index="pubmed",
+                    client=conn,
+                    actions=index(os.path.join(path, archive)),
+                    raise_on_error=False,
+                    request_timeout=60
+                ):
+                    if not ok and action["index"]["status"] != 409:
+                        self.logger.warning(action)
+            except ConnectionTimeout as e:
+                self.logger.warning("Timeout occurred while processing archive %s", archive)
+                self.logger.warning(e)
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
             os.unlink(os.path.join(path, archive))
