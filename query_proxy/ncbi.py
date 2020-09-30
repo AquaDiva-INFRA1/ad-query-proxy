@@ -133,11 +133,19 @@ class NCBI_Processor:
             if not archive + ".md5" in md5:
                 self.logger.warn("No md5 checksum available for %s", archive)
             archive_url = f"https://{NCBI_SERVER}/{BASELINE_DIR}/{archive}"
-            r = requests.get(archive_url, stream=True)
+            try:
+                r = requests.get(archive_url, stream=True)
+            except requests.exceptions.ConnectionError as e:
+                self.logger.warning(e)
+                continue
             with open(os.path.join(path, archive), "wb") as fd:
                 for chunk in r.iter_content(chunk_size=1_048_576):
                     fd.write(chunk)
-            r = requests.get(archive_url + ".md5")
+            try:
+                r = requests.get(archive_url + ".md5")
+            except requests.exceptions.ConnectionError as e:
+                self.logger.warning(e)
+                continue            
             match = MD5_MATCHER.match(r.content)
             md5sum = hashlib.md5()
             try:
