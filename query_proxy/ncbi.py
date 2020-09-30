@@ -138,22 +138,22 @@ class NCBI_Processor:
                     fd.write(chunk)
             r = requests.get(archive_url + ".md5")
             match = MD5_MATCHER.match(r.content)
-            md5 = hashlib.md5()
+            md5sum = hashlib.md5()
             try:
                 with open(os.path.join(path, archive), "rb") as compare_this:
                     block = compare_this.read(4096)
                     while len(block) != 0:
-                        md5.update(block)
+                        md5sum.update(block)
                         block = compare_this.read(4096)
             except Exception as e:
                 self.logger.error(e)
-            digest = md5.hexdigest()
-            if digest != match.group(1):
+            digest = md5sum.hexdigest()
+            if digest != match.group(1).decode('utf-8'):
                 self.logger.warning(
                     "MD5 checksum of %s did not match. Expected: %s. Was: %s. Skipping the archive.",
                     archive,
-                    digest,
                     match.group(1),
+                    digest,
                 )
                 continue
             for ok, action in es.helpers.streaming_bulk(
