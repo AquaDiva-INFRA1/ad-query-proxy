@@ -164,6 +164,7 @@ class NCBI_Processor:
                     match.group(1),
                     digest,
                 )
+                os.unlink(os.path.join(path, archive))
                 continue
             try:
                 for ok, action in es.helpers.streaming_bulk(
