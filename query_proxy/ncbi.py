@@ -145,7 +145,7 @@ class NCBI_Processor:
                 r = requests.get(archive_url + ".md5")
             except requests.exceptions.ConnectionError as e:
                 self.logger.warning(e)
-                continue            
+                continue
             match = MD5_MATCHER.match(r.content)
             md5sum = hashlib.md5()
             try:
