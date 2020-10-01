@@ -165,9 +165,9 @@ def parse(source) -> Dict[str, str]:
                 article["Version"] = "1"
             article["url"] = "https://www.ncbi.nlm.nih.gov/pubmed/" + pmid
             title = elem.find(".//ArticleTitle")
-            if title is None or title.text is None:
+            if title is None:
                 title = elem.find(".//VernacularTitle")
-                if title is None or title.text is None:
+                if title is None:
                     logging.warning("Article %s should have had a title", pmid)
                     continue
             else:
@@ -188,7 +188,6 @@ def parse(source) -> Dict[str, str]:
                         else:
                             logging.warning("Article %s should have had a title", pmid)
                             continue
-
             pages = elem.find(".//Pagination/MedlinePgn")
             if pages is not None and pages.text is not None:
                 article["pages"] = pages.text
