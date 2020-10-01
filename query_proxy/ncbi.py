@@ -189,6 +189,13 @@ class NCBI_Processor:
 def index(archive: str):
     with gzip.open(archive, "rt", encoding="utf-8") as data:
         for entry in pubmed.parse(data):
+            # Cleanse the text of character combinations that could be
+            # mistaken for MarkDown URLs. This will prevent the
+            # Mapper Annotated Text plugin from throwing an IllegalArgumentException.
+            if 'title' in entry:
+                entry['title'] = entry['title'].replace("](", "] (")
+            if 'abstract' in entry:
+                entry['abstract'] = entry['abstract'].replace("](", "] (")
             doc = {
                 "_op_type": "index",
                 "_index": INDEX,
