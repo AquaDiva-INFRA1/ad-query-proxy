@@ -17,6 +17,8 @@ import logging
 from typing import Dict, List
 from xml.etree.ElementTree import iterparse, Element
 
+logger = logging.getLogger("ncbi.pubmed")
+
 
 def handle_markup(element):
     # Handle marked up text
@@ -150,7 +152,9 @@ def parse(source) -> Dict[str, str]:
             article["PMID"] = pmid
             language = elem.find(".//Language")
             if language is None or language.text is None:
-                logging.warning(f"Warning: Article without language tag: {pmid}. English assumed")
+                logging.warning(
+                    f"Warning: Article without language tag: {pmid}. English assumed"
+                )
                 continue
             # Skip non-English articles
             elif language.text.lower() != "eng":
