@@ -1,6 +1,6 @@
 pronto==2.2.3
 elasticsearch==7.9.1
-elasticsearch-dsl==7.2.0
+elasticsearch-dsl==7.2.1
 intervaltree==3.1.0
 pyahocorasick==1.4.0
 spacy==2.3.2
