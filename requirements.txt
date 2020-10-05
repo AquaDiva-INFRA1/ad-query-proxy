@@ -1,7 +1,8 @@
-pronto==2.2.3
+pronto==2.3.1
 elasticsearch==7.9.1
-elasticsearch-dsl==7.2.1
+elasticsearch-dsl==7.3.0
 intervaltree==3.1.0
 pyahocorasick==1.4.0
 spacy==2.3.2
 https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-2.3.1/en_core_web_lg-2.3.1.tar.gz#egg=en_core_web_lg
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz#egg=en_core_web_sm
