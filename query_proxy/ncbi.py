@@ -24,6 +24,7 @@ from typing import List
 import elasticsearch as es
 from elasticsearch.exceptions import ConnectionTimeout
 import requests
+import spacy
 
 from elastic_import import setup, INDEX
 from parsers import pubmed
@@ -175,7 +176,7 @@ class NCBI_Processor:
                 for ok, action in es.helpers.streaming_bulk(
                     index="pubmed",
                     client=conn,
-                    actions=index(os.path.join(path, archive)),
+                    actions=self.index(os.path.join(path, archive)),
                     raise_on_error=False,
                     request_timeout=60,
                 ):
@@ -192,26 +193,44 @@ class NCBI_Processor:
         if not cleanup is None:
             cleanup()
 
+    def index(self, archive: str):
+        with gzip.open(archive, "rt", encoding="utf-8") as data:
+            for entry in pubmed.parse(data):
+                # Cleanse the text of character combinations that could be
+                # mistaken for MarkDown URLs. This will prevent the
+                # Mapper Annotated Text plugin from throwing an IllegalArgumentException.
+                if "title" in entry:
+                    doc = self.nlp(entry["title"].replace("](", "] ("))
+                    entry["title"] = annotate(doc)
+                if "abstract" in entry:
+                    doc = self.nlp(entry["abstract"].replace("](", "] ("))
+                    entry["abstract"] = annotate(doc)
+                doc = {
+                    "_op_type": "index",
+                    "_index": INDEX,
+                    "_id": entry["PMID"],
+                    "version": entry.pop("version", 1),
+                    "version_type": "external",
+                }
+                doc["_source"] = entry
+                yield doc
 
-def index(archive: str):
-    with gzip.open(archive, "rt", encoding="utf-8") as data:
-        for entry in pubmed.parse(data):
-            # Cleanse the text of character combinations that could be
-            # mistaken for MarkDown URLs. This will prevent the
-            # Mapper Annotated Text plugin from throwing an IllegalArgumentException.
-            if "title" in entry:
-                entry["title"] = entry["title"].replace("](", "] (")
-            if "abstract" in entry:
-                entry["abstract"] = entry["abstract"].replace("](", "] (")
-            doc = {
-                "_op_type": "index",
-                "_index": INDEX,
-                "_id": entry["PMID"],
-                "version": entry.pop("version", 1),
-                "version_type": "external",
-            }
-            doc["_source"] = entry
-            yield doc
+
+def annotate(doc: spacy.tokens.doc.Doc) -> str:
+    last = 0
+    parts = []
+    if doc.ents:
+        for ent in doc.ents:
+            parts.append(doc.text[last : ent.start_char])
+            entity = f"[{doc.text[ent.start_char:ent.end_char]}]"
+            candidates = "&".join(ent._.id_candidates)
+            parts.append(f"{entity}({candidates})")
+            last = ent.end_char
+        else:
+            parts.append(doc.text[last:])
+        return "".join(parts)
+    else:
+        return doc.text
 
 
 if __name__ == "__main__":
