@@ -13,3 +13,5 @@ scripts/
 dev/
 
 *.dat
+*.tar.gz
+*.pickle
