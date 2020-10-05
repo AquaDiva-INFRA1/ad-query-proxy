@@ -17,6 +17,7 @@ from pathlib import Path
 import re
 import shutil
 from socket import timeout
+import sys
 import tempfile
 from typing import List
 
@@ -26,14 +27,17 @@ import requests
 
 from elastic_import import setup, INDEX
 from parsers import pubmed
+from tagger import setup_pipeline
 
 MD5_MATCHER = re.compile(b"MD5\(.+?\)= ([0-9a-fA-F]{32})")
 NCBI_SERVER = "ftp.ncbi.nlm.nih.gov"
 BASELINE_DIR = "pubmed/baseline"
 
+logger = logging.getLogger("ncbi")
+
 
 class NCBI_Processor:
-    def __init__(self):
+    def __init__(self, trie_file: Path):
         self.logger = logging.getLogger("ncbi")
         dt = datetime.now()
         fh = logging.FileHandler(f"{dt.strftime('%Y%m%d-%H%M%S')}.log")
@@ -43,6 +47,7 @@ class NCBI_Processor:
         )
         fh.setFormatter(formatter)
         self.logger.addHandler(fh)
+        self.nlp = setup_pipeline(trie_file)
 
     def list_ncbi_files(self, path: str) -> List[str]:
         TIMEOUT = 60
@@ -157,7 +162,7 @@ class NCBI_Processor:
             except Exception as e:
                 self.logger.error(e)
             digest = md5sum.hexdigest()
-            if digest != match.group(1).decode('utf-8'):
+            if digest != match.group(1).decode("utf-8"):
                 self.logger.warning(
                     "MD5 checksum of %s did not match. Expected: %s. Was: %s. Skipping the archive.",
                     archive,
@@ -172,12 +177,14 @@ class NCBI_Processor:
                     client=conn,
                     actions=index(os.path.join(path, archive)),
                     raise_on_error=False,
-                    request_timeout=60
+                    request_timeout=60,
                 ):
                     if not ok and action["index"]["status"] != 409:
                         self.logger.warning(action)
             except ConnectionTimeout as e:
-                self.logger.warning("Timeout occurred while processing archive %s", archive)
+                self.logger.warning(
+                    "Timeout occurred while processing archive %s", archive
+                )
                 self.logger.warning(e)
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
@@ -192,10 +199,10 @@ def index(archive: str):
             # Cleanse the text of character combinations that could be
             # mistaken for MarkDown URLs. This will prevent the
             # Mapper Annotated Text plugin from throwing an IllegalArgumentException.
-            if 'title' in entry:
-                entry['title'] = entry['title'].replace("](", "] (")
-            if 'abstract' in entry:
-                entry['abstract'] = entry['abstract'].replace("](", "] (")
+            if "title" in entry:
+                entry["title"] = entry["title"].replace("](", "] (")
+            if "abstract" in entry:
+                entry["abstract"] = entry["abstract"].replace("](", "] (")
             doc = {
                 "_op_type": "index",
                 "_index": INDEX,
@@ -212,6 +219,20 @@ if __name__ == "__main__":
     PARSER.add_argument(
         "download_dir", type=Path, help="Temporary storage directory of the archives"
     )
+    PARSER.add_argument(
+        "automaton",
+        type=Path,
+        help="Path to a pickled automaton to be used for tagging",
+    )
     ARGS = PARSER.parse_args()
-    Ncbi = NCBI_Processor()
+    try:
+        Ncbi = NCBI_Processor(ARGS.automaton)
+    except OSError as e:
+        if e.args[0].startswith("[E050]"):
+            logger.error(
+                "The spaCy language model en_core_web_lg could not be loaded\n"
+                + "Please make sure to correct any spelling mistakes or to issue\n"
+                + "'python -m spacy download en_core_web_lg' beforehand"
+            )
+        sys.exit(1)
     Ncbi.process_archives(ARGS.download_dir)
