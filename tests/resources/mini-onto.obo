@@ -1,0 +1,466 @@
+format-version: 1.4
+ontology: http://www.example.com/testing-only/mini-onto.owl
+
+[Term]
+id: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Entity
+name: Entity
+comment: An entity is an object (e.g., a tree, a community, an ecological process). Entities constitute the foci of observations, i.e., every observation is of exactly one entity.
+disjoint_from: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Measurement
+disjoint_from: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#MeasurementType
+disjoint_from: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Observation
+disjoint_from: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#ObservationCollection
+disjoint_from: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Protocol
+disjoint_from: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Standard
+
+[Term]
+id: BFO:0000001
+name: entity
+property_value: http://purl.obolibrary.org/obo/BFO_0000179 "entity" xsd:string
+property_value: http://purl.obolibrary.org/obo/BFO_0000180 "Entity" xsd:string
+property_value: http://www.w3.org/2000/01/rdf-schema#isDefinedBy http://purl.obolibrary.org/obo/bfo.owl
+disjoint_from: http://www.geneontology.org/formats/oboInOwl#ObsoleteClass
+
+[Term]
+id: BFO:0000002
+name: continuant
+def: "An entity that exists in full at any time in which it exists at all, persists through time while maintaining its identity and has no temporal parts." []
+property_value: http://purl.obolibrary.org/obo/BFO_0000179 "continuant" xsd:string
+property_value: http://purl.obolibrary.org/obo/BFO_0000180 "Continuant" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x y) (if (and (Continuant x) (exists (t) (continuantPartOfAt y x t))) (Continuant y))) // axiom label in BFO2 CLIF: [009-002] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x y) (if (and (Continuant x) (exists (t) (hasContinuantPartOfAt y x t))) (Continuant y))) // axiom label in BFO2 CLIF: [126-001] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x) (if (Continuant x) (Entity x))) // axiom label in BFO2 CLIF: [008-002] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x) (if (Material Entity x) (exists (t) (and (TemporalRegion t) (existsAt x t))))) // axiom label in BFO2 CLIF: [011-002] " xsd:string
+property_value: http://www.w3.org/2000/01/rdf-schema#isDefinedBy http://purl.obolibrary.org/obo/bfo.owl
+is_a: BFO:0000001
+
+[Term]
+id: BFO:0000004
+name: independent continuant
+def: "b is an independent continuant = Def. b is a continuant which is such that there is no c and no t such that b s-depends_on c at t. (axiom label in BFO2 Reference: [017-002])" []
+property_value: http://purl.obolibrary.org/obo/BFO_0000179 "ic" xsd:string
+property_value: http://purl.obolibrary.org/obo/BFO_0000180 "IndependentContinuant" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x t) (if (IndependentContinuant x) (exists (r) (and (SpatialRegion r) (locatedInAt x r t))))) // axiom label in BFO2 CLIF: [134-001] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x t) (if (and (IndependentContinuant x) (existsAt x t)) (exists (y) (and (Entity y) (specificallyDependsOnAt y x t))))) // axiom label in BFO2 CLIF: [018-002] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(iff (IndependentContinuant a) (and (Continuant a) (not (exists (b t) (specificallyDependsOnAt a b t))))) // axiom label in BFO2 CLIF: [017-002] " xsd:string
+property_value: http://www.w3.org/2000/01/rdf-schema#isDefinedBy http://purl.obolibrary.org/obo/bfo.owl
+is_a: BFO:0000002
+is_a: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Entity
+disjoint_from: BFO:0000020
+
+[Term]
+id: BFO:0000031
+name: generically dependent continuant
+def: "b is a generically dependent continuant = Def. b is a continuant that g-depends_on one or more other entities. (axiom label in BFO2 Reference: [074-001])" []
+property_value: http://purl.obolibrary.org/obo/BFO_0000179 "gdc" xsd:string
+property_value: http://purl.obolibrary.org/obo/BFO_0000180 "GenericallyDependentContinuant" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(iff (GenericallyDependentContinuant a) (and (Continuant a) (exists (b t) (genericallyDependsOnAt a b t)))) // axiom label in BFO2 CLIF: [074-001] " xsd:string
+property_value: http://www.w3.org/2000/01/rdf-schema#isDefinedBy http://purl.obolibrary.org/obo/bfo.owl
+is_a: BFO:0000002
+is_a: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Entity
+
+[Term]
+id: BFO:0000040
+name: material entity
+def: "An independent continuant that is spatially extended whose identity is independent of that of other entities and can be maintained through time." []
+property_value: http://purl.obolibrary.org/obo/BFO_0000179 "material" xsd:string
+property_value: http://purl.obolibrary.org/obo/BFO_0000180 "MaterialEntity" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x) (if (MaterialEntity x) (IndependentContinuant x))) // axiom label in BFO2 CLIF: [019-002] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x) (if (and (Entity x) (exists (y t) (and (MaterialEntity y) (continuantPartOfAt x y t)))) (MaterialEntity x))) // axiom label in BFO2 CLIF: [021-002] " xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000602 "(forall (x) (if (and (Entity x) (exists (y t) (and (MaterialEntity y) (continuantPartOfAt y x t)))) (MaterialEntity x))) // axiom label in BFO2 CLIF: [020-002] " xsd:string
+property_value: http://www.w3.org/2000/01/rdf-schema#isDefinedBy http://purl.obolibrary.org/obo/bfo.owl
+is_a: BFO:0000004
+is_a: http://ecoinformatics.org/oboe/oboe.1.2/oboe-core.owl#Entity
+disjoint_from: BFO:0000141
+
+[Term]
+id: ENVO:00000000
+name: geographic feature
+namespace: ENVO
+comment: May appear on a map.
+synonym: "macroscopic spatial feature" EXACT []
+xref: https://en.wikipedia.org/wiki/Geographic_feature
+is_a: ENVO:00002297
+
+[Term]
+id: ENVO:00000002
+name: anthropogenic geographic feature
+namespace: ENVO
+def: "An anthropogenic geographic feature is a geographic feature\nresulting from the influence of human beings on nature." []
+synonym: "man-made feature" RELATED []
+synonym: "manmade feature" RELATED []
+xref: FTT:78
+xref: TGN:50001
+is_a: ENVO:00000000
+
+[Term]
+id: ENVO:00000026
+name: well
+namespace: ENVO
+def: "A cylindrical hole, pit, or tunnel drilled or dug down to a depth from which water, oil, or gas can be pumped or brought to the surface." []
+xref: EcoLexicon:well
+xref: FTT:1032
+xref: FTT:1237
+xref: FTT:833
+xref: Geonames:H.WLL
+xref: Geonames:H.WLLS
+xref: SWEETRealm:Well
+xref: TGN:51255
+xref: https://en.wikipedia.org/wiki/Well
+is_a: ENVO:00000002
+
+[Term]
+id: ENVO:00000070
+name: constructed feature
+namespace: ENVO
+def: "A feature that has been constructed by deliberate human effort." []
+property_value: http://purl.obolibrary.org/obo/IAO_0000116 "\"constructed\" should probably be made something like a quality and this class obsoleted or filled only by inferece" xsd:string
+is_a: ENVO:00000002
+
+[Term]
+id: ENVO:00000076
+name: mine
+namespace: ENVO
+def: "An excavation in the Earth for the purpose of extracting earth materials." []
+xref: EcoLexicon:mine
+xref: FTT:14
+xref: FTT:968
+xref: Geonames:L.MNA
+xref: Geonames:S.MN
+xref: TGN:54211
+xref: TGN:54212
+xref: https://en.wikipedia.org/wiki/Mine
+is_a: ENVO:00000070
+
+[Term]
+id: ENVO:00002297
+name: environmental feature
+namespace: ENVO
+def: "A material entity which determines an environmental system." []
+comment: A material entity determines an environmental system when its removal would cause the collapse of that system. For example, a seamount determines a seamount environment, acting as its 'hub'. This class is currently being aligned to the Basic Formal Ontology. Following this alignment, its definition and the definitions of its subclasses will be revised.
+is_a: BFO:0000040
+
+[Term]
+id: IAO:0000001
+name: conditional specification
+def: "a directive information entity that specifies what should happen if the trigger condition is fulfilled" []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000120
+is_a: IAO:0000033
+
+[Term]
+id: IAO:0000028
+name: symbol
+def: "An information content entity that is a mark(s) or character(s) used as a conventional representation of another entity." []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000125
+is_a: IAO:0000030
+
+[Term]
+id: IAO:0000029
+name: numeral
+def: "A symbol that denotes a number." []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000123
+is_a: IAO:0000028
+
+[Term]
+id: IAO:0000030
+name: information content entity
+def: "A generically dependent continuant that is about some thing." []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000122
+is_a: BFO:0000031
+
+[Term]
+id: IAO:0000031
+name: integer numeral
+def: "a numeral that denotes an integer" []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000123
+is_a: IAO:0000029
+
+[Term]
+id: IAO:0000033
+name: directive information entity
+def: "An information content entity whose concretizations indicate to their bearer how to realize them in a process." []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000122
+is_a: IAO:0000030
+
+[Term]
+id: IAO:0000055
+name: rule
+def: "a rule is an executable which guides, defines, restricts actions" []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000123
+is_a: IAO:0000001
+
+[Term]
+id: IAO:0000088
+name: report
+def: "a document assembled by an author for the purpose of providing information for the audience. A report is the output of a documenting process and has the objective to be consumed by a specific audience. Topic of the report is on something that has completed. A report is not a single figure. Examples of reports are journal article, patent application, grant progress report, case report (not patient record)" []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000125
+is_a: IAO:0000310
+
+[Term]
+id: IAO:0000310
+name: document
+def: "A collection of information content entities intended to be understood together as a whole" []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000120
+is_a: IAO:0000030
+
+[Term]
+id: NCBITaxon:117570
+name: Teleostomi
+is_a: NCBITaxon:7776
+
+[Term]
+id: NCBITaxon:117571
+name: Euteleostomi
+synonym: "bony vertebrates" EXACT []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Euteleostomi" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "bony vertebrates" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:117570
+is_a: NCBITaxon:7742
+
+[Term]
+id: NCBITaxon:131567
+name: cellular organisms
+synonym: "biota" RELATED []
+is_a: NCBITaxon:1
+
+[Term]
+id: NCBITaxon:1338369
+name: Dipnotetrapodomorpha
+is_a: NCBITaxon:8287
+
+[Term]
+id: NCBITaxon:1437010
+name: Boreoeutheria
+synonym: "Boreotheria" RELATED []
+is_a: NCBITaxon:9347
+
+[Term]
+id: NCBITaxon:1
+name: root
+synonym: "all" RELATED []
+is_a: BFO:0000040
+
+[Term]
+id: NCBITaxon:2
+name: Bacteria
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Bacteria" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "eubacteria" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: OBI:0100026
+
+[Term]
+id: NCBITaxon:207598
+name: Homininae
+synonym: "Homo/Pan/Gorilla group" RELATED []
+is_a: NCBITaxon:9604
+
+[Term]
+id: NCBITaxon:2759
+name: Eukaryota
+synonym: "Eucarya" RELATED []
+synonym: "Eukarya" RELATED []
+synonym: "eucaryotes" EXACT []
+synonym: "eukaryotes" EXACT []
+synonym: "Eukaryotae" RELATED []
+synonym: "eukaryotes" RELATED []
+synonym: "Eucaryotae" RELATED []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Eukaryota" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "eucaryotes" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "eukaryotes" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:131567
+is_a: OBI:0100026
+
+[Term]
+id: NCBITaxon:314146
+name: Euarchontoglires
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Euarchontoglires" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:1437010
+is_a: NCBITaxon:40674
+
+[Term]
+id: NCBITaxon:314293
+name: Simiiformes
+synonym: "Anthropoidea" RELATED []
+is_a: NCBITaxon:376913
+
+[Term]
+id: NCBITaxon:314295
+name: Hominoidea
+synonym: "ape" EXACT []
+synonym: "apes" EXACT []
+is_a: NCBITaxon:9526
+
+[Term]
+id: NCBITaxon:32523
+name: Tetrapoda
+synonym: "tetrapods" EXACT []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Tetrapoda" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "tetrapods" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:117571
+is_a: NCBITaxon:1338369
+
+[Term]
+id: NCBITaxon:32524
+name: Amniota
+synonym: "amniotes" EXACT []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Amniota" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "amniotes" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:32523
+
+[Term]
+id: NCBITaxon:33154
+name: Opisthokonta
+synonym: "Fungi/Metazoa group" RELATED []
+synonym: "opisthokonts" RELATED []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Opisthokonta" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:2759
+
+[Term]
+id: NCBITaxon:33208
+name: Metazoa
+synonym: "Animalia" RELATED []
+synonym: "multicellular animals" EXACT []
+synonym: "metazoans" EXACT []
+synonym: "animals" RELATED []
+is_a: NCBITaxon:33154
+
+[Term]
+id: NCBITaxon:33213
+name: Bilateria
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Bilateria" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:33154
+is_a: NCBITaxon:6072
+
+[Term]
+id: NCBITaxon:33511
+name: Deuterostomia
+synonym: "deuterostomes" EXACT []
+is_a: NCBITaxon:33213
+
+[Term]
+id: NCBITaxon:32525
+name: Theria <Mammalia>
+synonym: "Theria" EXACT []
+is_a: NCBITaxon:40674
+
+[Term]
+id: NCBITaxon:376913
+name: Haplorrhini
+is_a: NCBITaxon:9443
+
+[Term]
+id: NCBITaxon:40674
+name: Mammalia
+synonym: "mammals" EXACT []
+synonym: "mammals" RELATED []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Mammalia" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "mammals" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:32524
+
+[Term]
+id: NCBITaxon:6072
+name: Eumetazoa
+is_a: NCBITaxon:33208
+
+[Term]
+id: NCBITaxon:7711
+name: Chordata
+synonym: "chordates" RELATED []
+synonym: "chordates" EXACT []
+is_a: NCBITaxon:33511
+
+[Term]
+id: NCBITaxon:7742
+name: Vertebrata <Metazoa>
+synonym: "vertebrates" EXACT []
+synonym: "Vertebrata" EXACT []
+synonym: "vertebrates" RELATED []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Vertebrata <Metazoa>" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "Vertebrata" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "vertebrates" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:33213
+is_a: NCBITaxon:89593
+
+[Term]
+id: NCBITaxon:7776
+name: Gnathostomata <vertebrate>
+synonym: "jawed vertebrates" EXACT []
+synonym: "Gnathostomata" EXACT []
+is_a: NCBITaxon:7742
+
+[Term]
+id: NCBITaxon:8287
+name: Sarcopterygii
+is_a: NCBITaxon:117571
+
+[Term]
+id: NCBITaxon:89593
+name: Craniata <chordata>
+synonym: "Craniata" EXACT []
+is_a: NCBITaxon:7711
+
+[Term]
+id: NCBITaxon:9347
+name: Eutheria
+synonym: "eutherian mammals" EXACT []
+synonym: "placentals" EXACT []
+synonym: "placental mammals" EXACT []
+synonym: "placentals" RELATED []
+synonym: "Placentalia" RELATED []
+is_a: NCBITaxon:32525
+
+[Term]
+id: NCBITaxon:9443
+name: Primates
+synonym: "primates" RELATED []
+synonym: "Primata" RELATED []
+synonym: "primate" EXACT []
+is_a: NCBITaxon:314146
+
+[Term]
+id: NCBITaxon:9526
+name: Catarrhini
+is_a: NCBITaxon:314293
+
+[Term]
+id: NCBITaxon:9604
+name: Hominidae
+synonym: "Pongidae" RELATED []
+synonym: "great apes" EXACT []
+is_a: NCBITaxon:314295
+
+[Term]
+id: NCBITaxon:9605
+name: Homo
+is_a: NCBITaxon:207598
+
+[Term]
+id: NCBITaxon:9606
+name: Homo sapiens
+synonym: "man" EXACT []
+synonym: "human" EXACT []
+property_value: http://purl.obolibrary.org/obo/IAO_0000111 "Homo sapiens" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "human" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "human being" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000118 "man" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000412 http://purl.obolibrary.org/obo/ncbitaxon.owl
+is_a: NCBITaxon:314146
+is_a: NCBITaxon:9605
+
+[Term]
+id: OBI:0100026
+name: organism
+def: "A material entity that is an individual living system, such as animal, plant, bacteria or virus, that is capable of replicating or reproducing, growth and maintenance in the right environment. An organism may be unicellular or made up, like humans, of many billions of cells divided into specialized tissues and organs." []
+property_value: http://purl.obolibrary.org/obo/IAO_0000114 http://purl.obolibrary.org/obo/IAO_0000122
+property_value: http://purl.obolibrary.org/obo/IAO_0000116 "10/21/09: This is a placeholder term, that should ideally be imported from the NCBI taxonomy, but the high level hierarchy there does not suit our needs (includes plasmids and 'other organisms')" xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000116 "13-02-2009:\nOBI doesn't take position as to  when an organism starts or ends being an organism - e.g. sperm, foetus.\nThis issue is outside the scope of OBI." xsd:string
+property_value: http://purl.obolibrary.org/obo/IAO_0000117 "GROUP: OBI Biomaterial Branch" xsd:string
+is_a: BFO:0000040
