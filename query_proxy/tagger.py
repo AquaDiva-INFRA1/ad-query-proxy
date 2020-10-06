@@ -242,9 +242,11 @@ class Tagger:
 
 def setup_pipeline(trie_file: Path, debug=False):
     if debug:
-        nlp = spacy.load("en_core_web_sm", disable=["ner"])
+        nlp = spacy.load("en_core_web_sm", disable=["ner", "textcat", "parser"])
+        nlp.add_pipe(nlp.create_pipe("sentencizer"))
     else:
-        nlp = spacy.load("en_core_web_lg", disable=["ner"])
+        nlp = spacy.load("en_core_web_lg", disable=["ner", "textcat", "parser"])
+        nlp.add_pipe(nlp.create_pipe("sentencizer"))
     logger.info("Initializing tagger")
     tagger = Tagger(trie_file)
     nlp.add_pipe(tagger, after="tagger")
