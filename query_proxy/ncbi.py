@@ -26,9 +26,9 @@ from elasticsearch.exceptions import ConnectionTimeout
 import requests
 import spacy
 
-from elastic_import import setup, INDEX
 from parsers import pubmed
-from tagger import setup_pipeline
+from query_proxy.elastic_import import setup, INDEX
+from query_proxy.tagger import setup_pipeline
 
 MD5_MATCHER = re.compile(b"MD5\(.+?\)= ([0-9a-fA-F]{32})")
 NCBI_SERVER = "ftp.ncbi.nlm.nih.gov"
