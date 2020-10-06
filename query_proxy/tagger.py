@@ -54,7 +54,7 @@ NEGATIVE_TAX = set(
     ]
 )
 
-logger = logging.getLogger('tagger')
+logger = logging.getLogger("tagger")
 
 LABEL = "ENTITY"
 
@@ -63,7 +63,7 @@ class Tagger:
 
     name = "onto_tagger"
 
-    def __init__(self, trie_file: Path):
+    def __init__(self, trie_file: Path, exceptions=None):
         """
         Import an Aho-Corasick automaton from a pickled file.
         
@@ -78,6 +78,20 @@ class Tagger:
         self.EntityKey = cmp_to_key(Tagger.entity_sort)
         if not Span.get_extension("id_candidates"):
             Span.set_extension("id_candidates", default=object())
+        self.special = dict()
+        if exceptions is not None:
+            if isinstance(exceptions, Path):
+                with exceptions.open("rt") as definitions:
+                    for i, line in enumerate(definitions):
+                        if not line:
+                            continue
+                        try:
+                            concept, word_type = line.rstrip().split("\t")
+                            self.special[concept] = word_type
+                        except ValueError:
+                            logger.warning(f"Line {i} contains wrong format")
+            else:
+                raise TypeError("exceptions is expected to be a Path.")
 
     def __call__(self, doc):
         """
@@ -129,6 +143,14 @@ class Tagger:
             if annotation.start in start and annotation.end in end:
                 s = start.index(annotation.start)
                 e = end.index(annotation.end)
+                if s == e:
+                    token = doc[s]
+                    # Make sure ambiguous tokens have the correct POS tag
+                    if (
+                        token.text in self.special
+                        and not self.special[token.text] == token.pos_
+                    ):
+                        continue
                 span = Span(doc, s, e + 1, label=LABEL)
                 span._.set("id_candidates", annotation.label)
                 spans.append(span)
@@ -240,7 +262,7 @@ class Tagger:
         return filtered
 
 
-def setup_pipeline(trie_file: Path, debug=False):
+def setup_pipeline(trie_file: Path, exceptions=None, debug=False):
     if debug:
         nlp = spacy.load("en_core_web_sm", disable=["ner", "textcat", "parser"])
         nlp.add_pipe(nlp.create_pipe("sentencizer"))
@@ -248,7 +270,7 @@ def setup_pipeline(trie_file: Path, debug=False):
         nlp = spacy.load("en_core_web_lg", disable=["ner", "textcat", "parser"])
         nlp.add_pipe(nlp.create_pipe("sentencizer"))
     logger.info("Initializing tagger")
-    tagger = Tagger(trie_file)
+    tagger = Tagger(trie_file, exceptions)
     nlp.add_pipe(tagger, after="tagger")
     logger.info("Pipeline complete")
     return nlp
