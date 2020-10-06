@@ -127,7 +127,7 @@ class NCBI_Processor:
         conn = setup()
         for archive in archives:
             total, _, free = shutil.disk_usage(".")
-            if free / total < 0.5:
+            if free / total < 0.05:
                 self.logger.error(
                     "Only %s percent of disk space left. Will not attempt to import %s. Stopping now.",
                     "{:.2f}".format(free / total * 100),
