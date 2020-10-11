@@ -1,4 +1,19 @@
 {
  "es_hosts": ["localhost"],
- "index" : "aquadiva"
+ "index" : "pubmed",
+ "fields": ["author",
+    "title",
+    "abstract",
+    "volume",
+    "issue",
+    "pages",
+    "date",
+    "year",
+    "month",
+    "journal",
+    "pmid",
+    "mesh",
+    "version",
+    "url"
+ ]
 }
