@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Oct 8 11:29:27 2020
+
+@author: Bernd Kampe
+"""
 from typing import Dict, List, Tuple
 
 from flask import abort, request
