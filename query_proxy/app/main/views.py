@@ -16,6 +16,36 @@ INDEX_LIMIT = 1000
 
 
 def parse_args(args: Dict) -> Tuple[Dict, List]:
+    """
+    Parse the parameters of the GET request.
+
+    Parameters
+    ----------
+    args : Dict
+        The API accepts five parameters: "start", "end", "size", "sort" and "request"
+        
+        The 'start' parameter is zero-indexed, so 0 means first document.
+        It is mapped to the 'from' parameter in Elasticsearch.
+        
+        The 'end' parameter exists to make it easy to specify document ranges and
+        will be internally converted to a combination of 'from' and 'size'.
+        
+        The 'size' parameter specifies the number of documents to return.
+        This is limited to MAX_DOCUMENTS.
+        
+        The 'sort' parameter will have Elasticsearch return the documents in
+        'asc'ending or 'desc'ending order by date.
+        If no 'sort' parameter is specified, the documents are ranked by score instead.
+        
+        The 'request' parameter contains the search terms.
+
+    Returns
+    -------
+    Tuple[Dict, List]
+        The dictionary contains all supported parameters with their correct data type.
+        The list contains all the issues encountered during the parsing of the arguments as warning strings.
+
+    """
     query = {}
     warnings = []
     for key in args:
