@@ -65,7 +65,7 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                         f"'start' parameter has to be at least 1, was: {start}. Set to 0."
                     )
                     start = 0
-                if start > INDEX_LIMIT:
+                elif start > INDEX_LIMIT:
                     warnings.append(
                         f"The document start is not allowed to be larger than {INDEX_LIMIT}. Set to {INDEX_LIMIT}"
                     )
@@ -77,6 +77,16 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
         if key == "end":
             try:
                 end = int(args["end"])
+                if end > INDEX_LIMIT:
+                    warnings.append(
+                            f"The last document index is not allowed to be larger than {INDEX_LIMIT}. Set to {INDEX_LIMIT}"
+                    )
+                    end = INDEX_LIMIT
+                elif end < 0:
+                    warnings.append(
+                        f"'end' parameter has to be at least 1, was: {end}. Set to 0."
+                    )
+                    end = 0
                 query["end"] = end
             except ValueError as e:
                 warnings.append(f"Could not parse 'end' parameter: {e.args[0]}")
@@ -84,11 +94,19 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
         if key == "size":
             try:
                 size = int(args["size"])
+                if size > MAX_DOCUMENTS:
+                    warnings.append(
+                        f"The number of documents to return is not allowed to be larger than {MAX_DOCUMENTS}. Set to {MAX_DOCUMENTS}"
+                    )
+                    size = MAX_DOCUMENTS
+                elif size <= 0:
+                    warnings.append(f"'size' has to be at least 1, was: {size}. Set to 10.")
+                    size = 10
                 query["size"] = size
             except ValueError as e:
                 warnings.append(f"Could not parse 'size' parameter: {e.args[0]}")
             continue
-        if "sort" in args:
+        if key == "sort":
             sort = args["sort"].strip().lower()
             if sort in ("asc", "desc"):
                 query["sort"] = sort
@@ -96,7 +114,11 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                 warnings.append(
                     f"Unknown sorting parameter '{sort}'. Expected 'asc' or 'desc'."
                 )
-    return
+    if "start" in query and "end" in query:
+        if query["end"] < query["start"]:
+            warnings.append(f"'start' was larger than 'end': {start} > {end}. Switching values.")
+            query["end"], query["start"] = query["start"], query["end"]
+    return query, warnings
 
 
 @main.route("/", methods=["GET", "POST"])
