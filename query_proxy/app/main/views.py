@@ -79,7 +79,7 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                 end = int(args["end"])
                 if end > INDEX_LIMIT:
                     warnings.append(
-                            f"The last document index is not allowed to be larger than {INDEX_LIMIT}. Set to {INDEX_LIMIT}"
+                        f"The last document index is not allowed to be larger than {INDEX_LIMIT}. Set to {INDEX_LIMIT}"
                     )
                     end = INDEX_LIMIT
                 elif end < 0:
@@ -100,7 +100,9 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                     )
                     size = MAX_DOCUMENTS
                 elif size <= 0:
-                    warnings.append(f"'size' has to be at least 1, was: {size}. Set to 10.")
+                    warnings.append(
+                        f"'size' has to be at least 1, was: {size}. Set to 10."
+                    )
                     size = 10
                 query["size"] = size
             except ValueError as e:
@@ -116,7 +118,9 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                 )
     if "start" in query and "end" in query:
         if query["end"] < query["start"]:
-            warnings.append(f"'start' was larger than 'end': {start} > {end}. Switching values.")
+            warnings.append(
+                f"'start' was larger than 'end': {start} > {end}. Switching values."
+            )
             query["end"], query["start"] = query["start"], query["end"]
     return query, warnings
 
@@ -131,10 +135,7 @@ def index():
 
     if not "start" in query:
         if not "end" in query:
-            if not "size" in query:
-                query["size"] = 10
-            else:
-                pass
+            pass  # Returns 10 documents by default, query['size'] otherwise
         else:
             if not "size" in query:
                 pass
@@ -142,10 +143,7 @@ def index():
                 pass
     else:
         if not "end" in query:
-            if not "size" in query:
-                pass
-            else:
-                pass
+            pass  # Returns 10 documents by default, query['size'] otherwise
         else:
             if not "size" in query:
                 pass
