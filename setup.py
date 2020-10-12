@@ -14,6 +14,7 @@ setuptools.setup(
     url="https://github.com/AquaDiva-INFRA1/ad-query-proxy",
     packages=setuptools.find_packages(),
     classifiers=[
+        "Framework :: Flask",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -21,7 +22,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
         "Development Status :: 3 - Alpha",
-        "Intended Audience :: Science/Research"
+        "Intended Audience :: Science/Research",
+        "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application"
     ],
     python_requires='>=3.6',
 )
