@@ -5,6 +5,7 @@ Created on Thu Oct 8 11:29:27 2020
 
 @author: Bernd Kampe
 """
+import re
 from typing import Dict, List, Tuple
 
 from flask import abort, request
@@ -13,6 +14,28 @@ from . import main
 
 MAX_DOCUMENTS = 100
 INDEX_LIMIT = 1000
+
+
+# Parts taken from pronto.parsers.rdfxml._compact_id
+def compact_id(iri: str) -> str:
+    """Compact an OBO identifier into a prefixed identifier."""
+    match = re.match("^http://purl.obolibrary.org/obo/([^#_]+)_(.*)$", iri)
+    if match is not None:
+        return ":".join(match.groups())
+    return iri
+
+
+def parse_request(request: str):
+    terms = []
+    parts = request.split(",")
+    for part in parts:
+        iris = part.split(";")
+        for iri in iris:
+            iri = iri.strip()
+            if iri.startswith("http://"):
+                iri = compact_id(iri)
+            terms.append(iri)
+    return terms
 
 
 def parse_args(args: Dict) -> Tuple[Dict, List]:
@@ -149,6 +172,7 @@ def index():
                 pass
             else:
                 pass
-    answer = "\n".join(f"{key}: {value}" for key, value in query.items())
+    answer = "<br>".join(f"{key}: {value}" for key, value in query.items())
+    answer += "<br>" + "<br>".join(warnings)
 
     return answer
