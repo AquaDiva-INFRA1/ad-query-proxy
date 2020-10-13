@@ -160,18 +160,57 @@ def index():
         if not "end" in query:
             pass  # Returns 10 documents by default, query['size'] otherwise
         else:
+            # only 'end'
             if not "size" in query:
-                pass
+                end = query["end"]
+                if end <= MAX_DOCUMENTS - 1:
+                    query["size"] = end + 1
+                    del query["end"]
+                else:
+                    abort(
+                        400,
+                        description=f"Trying to request more than {MAX_DOCUMENTS} documents.",
+                    )
             else:
-                pass
+                # 'end' and 'size'
+                end = query["end"]
+                size = query["size"]
+                if end - size + 1 < 0:
+                    warnings.append(
+                        f"Starting position would be less than 0: 'end' = {end}, 'size' = {size}. Will return {end+1} documents."
+                    )
+                    query["size"] = end + 1
+                    del query["end"]
     else:
         if not "end" in query:
             pass  # Returns 10 documents by default, query['size'] otherwise
         else:
             if not "size" in query:
-                pass
+                start = query["start"]
+                end = query["end"]
+                if end - start + 1 > MAX_DOCUMENTS:
+                    warnings.append(
+                        f"The request would return more than {MAX_DOCUMENTS} documents. Limiting to {MAX_DOCUMENTS}."
+                    )
+                    query["size"] = MAX_DOCUMENTS
+                    del query["end"]
+                else:
+                    query["size"] = end - start + 1
             else:
-                pass
+                warnings.append("'start', 'end' and 'size' specified. Ignoring 'size'.")
+                del query["size"]
+                start = query["start"]
+                end = query["end"]
+                if end - start + 1 > MAX_DOCUMENTS:
+                    warnings.append(
+                        f"The request would return more than {MAX_DOCUMENTS} documents. Limiting to {MAX_DOCUMENTS}."
+                    )
+                    query["size"] = MAX_DOCUMENTS
+                    del query["end"]
+                else:
+                    query["size"] = end - start + 1
+        if query["start"] == 0:  # This is the default anyway
+            del query["start"]
     answer = "<br>".join(f"{key}: {value}" for key, value in query.items())
     answer += "<br>" + "<br>".join(warnings)
 
