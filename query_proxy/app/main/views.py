@@ -163,10 +163,22 @@ def prepare_response(es_response):
                 hit["title"] = r.title
             if "author" in r:
                 hit["author"] = "; ".join(r.author)
-            if "highlight" in r.meta and "abstract" in r.meta.highlight:
-                hit["abstract"] = r.meta.highlight.abstract
-            elif "abstract" in r:
+            if "abstract" in r:
                 hit["abstract"] = r.abstract
+            if "journal" in r:
+                hit["journal"] = r.journal
+            if "volume" in r:
+                hit["volume"] = r.volume
+            if "issue" in r:
+                hit["issue"] = r.issue
+            if "pages" in r:
+                hit["pages"] = r.pages
+            if "year" in r:
+                hit["year"] = r.year
+            if "date" in r:
+                hit["date"] = r.date
+            if "url" in r:
+                hit["url"] = r.url
             hits.append(hit)
     return hits
 
@@ -256,6 +268,14 @@ def index():
 
     # answer["parameters"] = query
     answer["request"] = original_request
+    if "start" in query:
+        answer["start"] = query["start"]
+    if "end" in query:
+        answer["end"] = query["end"]
+    if "size" in query:
+        answer["size"] = query["size"]
+    if "sort" in query:
+        answer["sort"] = query["sort"]
     answer["warnings"] = warnings
 
     return jsonify(answer)
