@@ -8,7 +8,8 @@ Created on Thu Oct 8 11:29:27 2020
 import re
 from typing import Dict, List, Tuple
 
-from flask import abort, request
+from elasticsearch_dsl import Q
+from flask import abort, current_app, jsonify, request
 
 from . import main
 
@@ -34,7 +35,12 @@ def parse_request(request: str):
             iri = iri.strip()
             if iri.startswith("http://"):
                 iri = compact_id(iri)
-            terms.append(iri)
+                terms.append(Q({"term": {"title": iri}}))
+                terms.append(Q({"term": {"abstract": iri}}))
+            else:
+                terms.append(
+                    Q({"multi_match": {"query": iri, "fields": ["title", "abstract"]}})
+                )
     return terms
 
 
@@ -148,6 +154,23 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
     return query, warnings
 
 
+def prepare_response(es_response):
+    hits = []
+    if es_response.hits.total.value != 0:
+        for r in es_response:
+            hit = {"id": r.meta.id}
+            if "title" in r:
+                hit["title"] = r.title
+            if "author" in r:
+                hit["author"] = " and ".join(r.author)
+            if "highlight" in r.meta and "abstract" in r.meta.highlight:
+                hit["abstract"] = r.meta.highlight.abstract
+            elif "abstract" in r:
+                hit["abstract"] = r.abstract
+            hits.append(hit)
+    return hits
+
+
 @main.route("/", methods=["GET", "POST"])
 def index():
     query, warnings = parse_args(request.args)
@@ -211,7 +234,28 @@ def index():
                     query["size"] = end - start + 1
         if query["start"] == 0:  # This is the default anyway
             del query["start"]
-    answer = "<br>".join(f"{key}: {value}" for key, value in query.items())
-    answer += "<br>" + "<br>".join(warnings)
 
-    return answer
+    original_request = query["request"]
+    query["request"] = parse_request(query["request"])
+    prepared_search = current_app.config["SEARCH"]
+    prepared_search = prepared_search.query(Q({"bool": {"must": query["request"]}}))
+    if "sort" in query:
+        prepared_search = prepared_search.sort({"date": {"order": query["sort"]}})
+    if "start" in query and "size" in query:
+        prepared_search = prepared_search[
+            query["start"] : query["start"] + query["size"]
+        ]
+    elif "start" in query:
+        prepared_search = prepared_search[query["start"] : query["start"] + 10]
+    elif "size" in query:
+        prepared_search = prepared_search[: query["size"]]
+
+    es_response = prepared_search.execute()
+    answer = {}
+    answer["hits"] = prepare_response(es_response)
+
+    # answer["parameters"] = query
+    answer["request"] = original_request
+    answer["warnings"] = warnings
+
+    return jsonify(answer)
