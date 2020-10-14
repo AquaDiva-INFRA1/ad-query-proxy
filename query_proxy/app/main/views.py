@@ -162,7 +162,7 @@ def prepare_response(es_response):
             if "title" in r:
                 hit["title"] = r.title
             if "author" in r:
-                hit["author"] = " and ".join(r.author)
+                hit["author"] = "; ".join(r.author)
             if "highlight" in r.meta and "abstract" in r.meta.highlight:
                 hit["abstract"] = r.meta.highlight.abstract
             elif "abstract" in r:
