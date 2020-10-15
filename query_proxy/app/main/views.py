@@ -27,21 +27,46 @@ def compact_id(iri: str) -> str:
 
 
 def parse_request(request: str):
-    terms = []
+    query_parts = []
+    must = []
+    should = []
     parts = request.split(",")
     for part in parts:
         iris = part.split(";")
+        first = True
         for iri in iris:
             iri = iri.strip()
             if iri.startswith("http://"):
                 iri = compact_id(iri)
-                terms.append(Q({"term": {"title": iri}}))
-                terms.append(Q({"term": {"abstract": iri}}))
+                if first:
+                    must.append(
+                        Q(
+                            {
+                                "bool": {
+                                    "should": [
+                                        {"term": {"title": iri}},
+                                        {"term": {"abstract": iri}},
+                                    ]
+                                }
+                            }
+                        )
+                    )
+                    first = False
+                else:
+                    should.append(Q({"term": {"title": iri}}))
+                    should.append(Q({"term": {"abstract": iri}}))
             else:
-                terms.append(
+                must.append(
                     Q({"multi_match": {"query": iri, "fields": ["title", "abstract"]}})
                 )
-    return terms
+        else:
+            if should:
+                query_parts.append(Q({"bool": {"must": must, "should": should}}))
+                should.clear()
+            else:
+                query_parts.append(Q({"bool": {"must": must}}))
+            must.clear()
+    return query_parts
 
 
 def parse_args(args: Dict) -> Tuple[Dict, List]:
@@ -156,7 +181,7 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
 
 def remove_annotations(text: str) -> str:
     ANNOTATION_MATCHER = current_app.config["ANNOTATION_MATCHER"]
-    return re.subn(ANNOTATION_MATCHER, r'\g<1>', text)[0]
+    return re.subn(ANNOTATION_MATCHER, r"\g<1>", text)[0]
 
 
 def prepare_response(es_response):
