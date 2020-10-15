@@ -7,7 +7,7 @@ from .config import read_config
 class Config:
     config = read_config()
 
-    URL_MATCHER = re.compile(r"((https?|ftp)://[^\s/$.?#].[^\s]+[^\s\.])")
+    ANNOTATION_MATCHER = re.compile("\\[(.*?)\\]\\(.*?\\)")
 
     conn = connections.create_connection(hosts=config["es_hosts"])
     search = Search(using=conn)

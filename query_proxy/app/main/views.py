@@ -154,17 +154,22 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
     return query, warnings
 
 
+def remove_annotations(text: str) -> str:
+    ANNOTATION_MATCHER = current_app.config["ANNOTATION_MATCHER"]
+    return re.subn(ANNOTATION_MATCHER, r'\g<1>', text)[0]
+
+
 def prepare_response(es_response):
     hits = []
     if es_response.hits.total.value != 0:
         for r in es_response:
             hit = {"id": r.meta.id}
             if "title" in r:
-                hit["title"] = r.title
+                hit["title"] = remove_annotations(r.title)
             if "author" in r:
                 hit["author"] = "; ".join(r.author)
             if "abstract" in r:
-                hit["abstract"] = r.abstract
+                hit["abstract"] = remove_annotations(r.abstract)
             if "journal" in r:
                 hit["journal"] = r.journal
             if "volume" in r:
