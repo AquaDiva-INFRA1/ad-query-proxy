@@ -24,7 +24,7 @@ def handle_markup(element):
     # Handle marked up text
     for tag in iter(element):
         if tag.text:
-            tag.text = "<" + tag.tag + ">" + tag.text + "<" + tag.tag + ">"
+            tag.text = "<" + tag.tag + ">" + tag.text + "</" + tag.tag + ">"
 
 
 def extract_abstract(abstract: Element) -> str:
