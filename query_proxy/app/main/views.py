@@ -69,6 +69,37 @@ def parse_request(request: str):
     return query_parts
 
 
+def parse_request_fallback(request: str):
+    query_parts = []
+    parts = request.split(",")
+    for part in parts:
+        iris = part.split(";")
+        first = True
+        for iri in iris:
+            iri = iri.strip()
+            if iri.startswith("http://"):
+                iri = compact_id(iri)
+                if first:
+                    query_parts.append(
+                        Q(
+                            {
+                                "bool": {
+                                    "should": [
+                                        {"term": {"title": iri}},
+                                        {"term": {"abstract": iri}},
+                                    ]
+                                }
+                            }
+                        )
+                    )
+                    first = False
+            else:
+                query_parts.append(
+                    Q({"multi_match": {"query": iri, "fields": ["title", "abstract"]}})
+                )
+    return query_parts
+
+
 def parse_args(args: Dict) -> Tuple[Dict, List]:
     """
     Parse the parameters of the GET request.
@@ -297,6 +328,7 @@ def index():
 
     # We switch to ORing queries, if ANDing did not result in any hits
     if not answer["hits"]:
+        query["request"] = parse_request_fallback(query["request"])
         prepared_search = current_app.config["SEARCH"]
         prepared_search = prepared_search.query(
             Q({"bool": {"should": query["request"]}})
