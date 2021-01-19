@@ -291,10 +291,29 @@ def index():
         prepared_search = prepared_search[query["start"] : query["start"] + 10]
     elif "size" in query:
         prepared_search = prepared_search[: query["size"]]
-
     es_response = prepared_search.execute()
     answer = {}
     answer["hits"] = prepare_response(es_response)
+
+    # We switch to ORing queries, if ANDing did not result in any hits
+    if not answer["hits"]:
+        prepared_search = current_app.config["SEARCH"]
+        prepared_search = prepared_search.query(
+            Q({"bool": {"should": query["request"]}})
+        )
+        if "sort" in query:
+            prepared_search = prepared_search.sort({"date": {"order": query["sort"]}})
+        if "start" in query and "size" in query:
+            prepared_search = prepared_search[
+                query["start"] : query["start"] + query["size"]
+            ]
+        elif "start" in query:
+            prepared_search = prepared_search[query["start"] : query["start"] + 10]
+        elif "size" in query:
+            prepared_search = prepared_search[: query["size"]]
+        es_response = prepared_search.execute()
+        answer = {}
+        answer["hits"] = prepare_response(es_response)
 
     # answer["parameters"] = query
     answer["request"] = original_request
