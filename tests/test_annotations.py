@@ -20,7 +20,7 @@ def test_simple_annotations():
     annotations = annotate(doc)
     assert (
         annotations
-        == "[Humans](NCBITaxon:9605) have a lot of [bacteria](NCBITaxon:2) living on them."
+        == "[Humans](NCBITaxon%3A9605) have a lot of [bacteria](NCBITaxon%3A2) living on them."
     )
 
 
@@ -32,5 +32,5 @@ def test_ambiguous_annotation():
     annotations = annotate(doc)
     # NB: This is still (of course) the wrong kind of mine
     assert (
-        annotations == "We can't rule out that the [mine](ENVO:00000076) won't explode."
+        annotations == "We can't rule out that the [mine](ENVO%3A00000076) won't explode."
     )
