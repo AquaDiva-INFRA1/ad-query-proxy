@@ -8,7 +8,7 @@ ssh-copy-id user@example.com
 python3 -m venv ansible
 source ansible/bin/activate
 python3 -m pip install ansible
-ansible-galaxy install elastic.elasticsearch,7.10.2  #
+ansible-galaxy install elastic.elasticsearch,7.10.1  #
 ansible-galaxy collection install community.general
 ```
 
@@ -33,7 +33,7 @@ Ansible will then log into the client to install [Elasticsearch](https://www.ela
   roles:
   - role: elastic.elasticsearch
   vars:
-    es_version: 7.10.2
+    es_version: 7.10.1
 ```
 
 [Roles](https://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html) let you bundle up and distribute tasks. [Elastic](https://github.com/elastic/ansible-elasticsearch) provides an Ansible role for easy deployment of an Elasticsearch service.
@@ -49,7 +49,7 @@ Ansible will then log into the client to install [Elasticsearch](https://www.ela
     community.general.elasticsearch_plugin:
       name: mapper-annotated-text
       state: present
-      version: 7.10.2
+      version: 7.10.1
 ```
 
 The query proxy relies on the [Mapper Annotated Text plugin](https://www.elastic.co/blog/search-for-things-not-strings-with-the-annotated-text-plugin) that got introduced in Elasticsearch [6.5](https://www.elastic.co/guide/en/elasticsearch/plugins/6.5/mapper-annotated-text.html) and carries on to be supported in [7.11](https://www.elastic.co/guide/en/elasticsearch/plugins/7.11/mapper-annotated-text.html). Still, the plugin is considered 'experimental' and might get changed or removed in the future. Please read version notes carefully with regard to that.
