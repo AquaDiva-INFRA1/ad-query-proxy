@@ -1,5 +1,5 @@
 pronto==2.2.0
-elasticsearch==7.10.2
+elasticsearch==7.10.1
 elasticsearch-dsl==7.3.0
 Flask==1.1.2
 waitress==1.4.4
