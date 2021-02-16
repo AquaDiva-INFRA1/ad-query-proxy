@@ -1,0 +1,130 @@
+ID                        : 1
+PARENT ID                 : 0
+RANK                      : no rank
+GC ID                     : 1
+SCIENTIFIC NAME           : root
+SYNONYM                   : all
+//
+ID                        : 2759
+PARENT ID                 : 131567
+RANK                      : superkingdom
+GC ID                     : 1
+MGC ID                    : 1
+SCIENTIFIC NAME           : Eukaryota
+GENBANK COMMON NAME       : eucaryotes
+SYNONYM                   : Eukaryotae
+SYNONYM                   : Eukarya
+SYNONYM                   : Eucaryotae
+SYNONYM                   : Eucarya
+COMMON NAME               : eukaryotes
+BLAST NAME                : eukaryotes
+//
+ID                        : 4890
+PARENT ID                 : 451864
+RANK                      : phylum
+GC ID                     : 1
+MGC ID                    : 4
+SCIENTIFIC NAME           : Ascomycota
+GENBANK COMMON NAME       : ascomycetes
+COMMON NAME               : sac fungi
+BLAST NAME                : ascomycetes
+//
+ID                        : 4891
+PARENT ID                 : 147537
+RANK                      : class
+GC ID                     : 1
+MGC ID                    : 3
+SCIENTIFIC NAME           : Saccharomycetes
+SYNONYM                   : Hemiascomycetes
+//
+ID                        : 4892
+PARENT ID                 : 4891
+RANK                      : order
+GC ID                     : 1
+MGC ID                    : 3
+SCIENTIFIC NAME           : Saccharomycetales
+SYNONYM                   : Endomycetales
+BLAST NAME                : budding yeasts
+//
+ID                        : 4893
+PARENT ID                 : 4892
+RANK                      : family
+GC ID                     : 1
+MGC ID                    : 3
+SCIENTIFIC NAME           : Saccharomycetaceae
+INCLUDES                  : Eremotheciaceae
+//
+ID                        : 4930
+PARENT ID                 : 4893
+RANK                      : genus
+GC ID                     : 1
+MGC ID                    : 3
+SCIENTIFIC NAME           : Saccharomyces
+SYNONYM                   : Pachytichospora
+//
+ID                        : 4932
+PARENT ID                 : 4930
+RANK                      : species
+GC ID                     : 1
+MGC ID                    : 3
+SCIENTIFIC NAME           : Saccharomyces cerevisiae
+GENBANK COMMON NAME       : baker's yeast
+SYNONYM                   : Saccharomyces uvarum var. melibiosus
+SYNONYM                   : Saccharomyces oviformis
+SYNONYM                   : Saccharomyces italicus
+SYNONYM                   : Saccharomyces capensis
+COMMON NAME               : S. cerevisiae
+COMMON NAME               : brewer's yeast
+ANAMORPH                  : Candida robusta
+MISSPELLING               : Saccaromyces cerevisiae
+MISSPELLING               : Saccharomyes cerevisiae
+MISSPELLING               : Sccharomyces cerevisiae
+MISSPELLING               : Saccharomyce cerevisiae
+//
+ID                        : 33154
+PARENT ID                 : 2759
+RANK                      : no rank
+GC ID                     : 1
+MGC ID                    : 1
+SCIENTIFIC NAME           : Opisthokonta
+SYNONYM                   : Fungi/Metazoa group
+SYNONYM                   : opisthokonts
+//
+ID                        : 4751
+PARENT ID                 : 33154
+RANK                      : kingdom
+GC ID                     : 1
+MGC ID                    : 4
+SCIENTIFIC NAME           : Fungi
+GENBANK COMMON NAME       : fungi
+BLAST NAME                : fungi
+//
+ID                        : 131567
+PARENT ID                 : 1
+RANK                      : no rank
+GC ID                     : 1
+SCIENTIFIC NAME           : cellular organisms
+SYNONYM                   : biota
+//
+ID                        : 147537
+PARENT ID                 : 716545
+RANK                      : subphylum
+GC ID                     : 1
+MGC ID                    : 4
+SCIENTIFIC NAME           : Saccharomycotina
+GENBANK COMMON NAME       : true yeasts
+//
+ID                        : 451864
+PARENT ID                 : 4751
+RANK                      : subkingdom
+GC ID                     : 1
+MGC ID                    : 4
+SCIENTIFIC NAME           : Dikarya
+//
+ID                        : 716545
+PARENT ID                 : 4890
+RANK                      : no rank
+GC ID                     : 1
+MGC ID                    : 4
+SCIENTIFIC NAME           : saccharomyceta
+//
