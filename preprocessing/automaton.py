@@ -40,9 +40,9 @@ class ChemTagger:
     def __init__(self, wordlist, label="CHEMICAL", finalize: bool = True):
         """
         Creates an Aho-Corasick automaton out of a text file.
-        
+
         :param wordlist: An open file with one entity per line.
-        
+
         """
         automaton = Automaton()
         for line in wordlist:
@@ -61,14 +61,14 @@ class ChemTagger:
     def __call__(self, doc):
         """
         Applies the tagger automaton to the text.
-    
+
         Parameters
         ----------
         text : str
             The text we want to search for entities
         tagger : Automaton
             An instance of an Aho-Corasick automaton
-        
+
         """
         text = doc.text
         annotations = []
@@ -109,7 +109,14 @@ class ChemTagger:
                 for span in spans:
                     tree.remove_overlap(span.start, span.end)
                     tree.addi(span.start, span.end, span)
-                spans = tuple(span for (_, _, span,) in tree)
+                spans = tuple(
+                    span
+                    for (
+                        _,
+                        _,
+                        span,
+                    ) in tree
+                )
                 doc.ents = spans
             else:
                 try:
@@ -153,21 +160,21 @@ class ChemTagger:
     def entity_sort(entity1: Annotation, entity2: Annotation) -> int:
         """
         A comparison function for Annotations.
-    
+
         Parameters
         ----------
         entity1 : Annotation
             An Annotation.
         entity2 : Annotation
             Another Annotation.
-    
+
         Returns
         -------
         int
             -1, if entity1 starts sooner
              1, if entity1 starts later
              the difference between the end of entity2 and entity1 otherwise.
-    
+
         """
         if entity1.start < entity2.start:
             return -1
@@ -180,17 +187,17 @@ class ChemTagger:
         Removes shortes matches.
         E.g. when 'hydrogen peroxide' and 'hydrogen' have overlapping
         annotations, 'hydrogen peroxide' is returned.
-    
+
         Parameters
         ----------
         entities : List[Annotation]
             A list of entities extracted from a text.
-    
+
         Returns
         -------
         List[Annotation]
             The widest annotations in case of an overlap.
-    
+
         """
         filtered = []
         start = -1

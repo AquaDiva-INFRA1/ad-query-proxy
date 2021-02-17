@@ -152,19 +152,19 @@ def filter_NCBI_taxonomy(
 ) -> Dict[str, List[str]]:
     """
     Create a dictionary containing all name variants of specific entries.
-    
+
     Parameters
     ----------
     file : Union[Path, str]
         Path to taxonomy.dat
     ids : List[str]
         A list of all IDs of interest
-    
+
     Returns
     -------
     Dict[str, List[str]]
         All generated name variants stored by ID.
-    
+
     """
     entries = dict()
     if not ids is None:

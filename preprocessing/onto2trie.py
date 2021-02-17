@@ -20,7 +20,7 @@ from preprocessing.ncbi_filter import filter_NCBI_taxonomy
 
 def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str]]:
     """
-    
+
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str
     Returns
     -------
     Tuple[Dict[str, List[str]], List[str]]
-        The first entry of the tuple is a dictionary with lists of all 
+        The first entry of the tuple is a dictionary with lists of all
         names and synonyms for all keys that are not in the NCBI Taxonomy.
         The second entry is a list of all IDs that originate from the
         NCBI Taxonomy (except the root, if present).
