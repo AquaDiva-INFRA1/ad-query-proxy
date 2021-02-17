@@ -65,7 +65,7 @@ def extract_authors(authors: Element) -> List[str]:
             names = " ".join(
                 x.text
                 for x in [initials, lastname, suffix]
-                if not x is None and not x.text is None
+                if x is not None and x.text is not None
             )
             if not names == "":
                 authorList.append(names)
@@ -74,7 +74,7 @@ def extract_authors(authors: Element) -> List[str]:
                 " ".join(
                     x.text
                     for x in [forename, lastname, suffix]
-                    if not x is None and not x.text is None
+                    if x is not None and x.text is not None
                 )
             )
     if "CompleteYN" in authors.attrib and authors.attrib["CompleteYN"] == "N":
@@ -114,7 +114,7 @@ def extract_journaldata(journal: Element, pmid: str) -> Dict[str, str]:
     if pubdate is not None and pubdate.text is not None:
         # Could be a non-standard date
         medline_date = pubdate.find("MedlineDate")
-        if not medline_date is None and medline_date.text is not None:
+        if medline_date is not None and medline_date.text is not None:
             data["date"] = medline_date.text
         else:
             year = pubdate.find("Year")

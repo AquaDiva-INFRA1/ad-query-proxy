@@ -1,4 +1,3 @@
-import logging
 import re
 
 from elasticsearch_dsl import Search, connections

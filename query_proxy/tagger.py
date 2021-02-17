@@ -184,11 +184,11 @@ class Tagger:
                         )
                         message = e.args[0]
                         m = span_re.search(message)
-                        if not m is None:
+                        if m is not None:
                             start1 = int(m.group(1))
                             end1 = int(m.group(2))
                             m = span_re.search(message, m.end() + 1)
-                            if not m is None:
+                            if m is not None:
                                 start2 = int(m.group(1))
                                 end2 = int(m.group(2))
                                 logging.error(e)

@@ -130,7 +130,8 @@ class NCBI_Processor:
             total, _, free = shutil.disk_usage(".")
             if free / total < 0.05:
                 self.logger.error(
-                    "Only %s percent of disk space left. Will not attempt to import %s. Stopping now.",
+                    "Only %s percent of disk space left. Will not attempt to import %s."
+                    + " Stopping now.",
                     "{:.2f}".format(free / total * 100),
                     archive,
                 )
@@ -166,7 +167,8 @@ class NCBI_Processor:
             digest = md5sum.hexdigest()
             if digest != match.group(1).decode("utf-8"):
                 self.logger.warning(
-                    "MD5 checksum of %s did not match. Expected: %s. Was: %s. Skipping the archive.",
+                    "MD5 checksum of %s did not match. Expected: %s. Was: %s."
+                    + " Skipping the archive.",
                     archive,
                     match.group(1),
                     digest,
@@ -191,7 +193,7 @@ class NCBI_Processor:
             with done_file.open("a") as done:
                 _ = done.write(f"{archive}\n")
             os.unlink(os.path.join(path, archive))
-        if not cleanup is None:
+        if cleanup is not None:
             cleanup()
 
     def index(self, archive: str):

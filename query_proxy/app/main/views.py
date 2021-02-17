@@ -128,15 +128,17 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
     -------
     Tuple[Dict, List]
         The dictionary contains all supported parameters with their correct data type.
-        The list contains all the issues encountered during the parsing of the arguments as warning strings.
+        The list contains all the issues encountered during the parsing of the arguments
+        as warning strings.
 
     """
     query = {}
     warnings = []
     for key in args:
-        if not key in ("start", "end", "size", "sort", "request"):
+        if key not in ("start", "end", "size", "sort", "request"):
             warnings.append(
-                f"Found unknown parameter '{key}'. Expected: 'start', 'end', 'size', 'sort' or 'request'."
+                f"Found unknown parameter '{key}'. Expected: 'start', 'end',"
+                + " 'size', 'sort' or 'request'."
             )
             continue
         if key == "request":
@@ -152,7 +154,8 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                     start = 0
                 elif start > INDEX_LIMIT:
                     warnings.append(
-                        f"The document start is not allowed to be larger than {INDEX_LIMIT}. Set to {INDEX_LIMIT}"
+                        f"The document start is not allowed to be larger than {INDEX_LIMIT}."
+                        + f" Set to {INDEX_LIMIT}."
                     )
                     start = INDEX_LIMIT
                 query["start"] = start
@@ -164,7 +167,8 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                 end = int(args["end"])
                 if end > INDEX_LIMIT:
                     warnings.append(
-                        f"The last document index is not allowed to be larger than {INDEX_LIMIT}. Set to {INDEX_LIMIT}"
+                        f"The last document index is not allowed to be larger than {INDEX_LIMIT}."
+                        + f" Set to {INDEX_LIMIT}."
                     )
                     end = INDEX_LIMIT
                 elif end < 0:
@@ -181,7 +185,8 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
                 size = int(args["size"])
                 if size > MAX_DOCUMENTS:
                     warnings.append(
-                        f"The number of documents to return is not allowed to be larger than {MAX_DOCUMENTS}. Set to {MAX_DOCUMENTS}"
+                        "The number of documents to return is not allowed to be larger "
+                        + f"than {MAX_DOCUMENTS}. Set to {MAX_DOCUMENTS}."
                     )
                     size = MAX_DOCUMENTS
                 elif size <= 0:
@@ -249,15 +254,15 @@ def index():
     query, warnings = parse_args(request.args)
 
     # raise 400: Bad Request
-    if not "request" in query:
+    if "request" not in query:
         abort(400, description="Query terms are missing. Expected 'request' parameter.")
 
-    if not "start" in query:
-        if not "end" in query:
+    if "start" not in query:
+        if "end" not in query:
             pass  # Returns 10 documents by default, query['size'] otherwise
         else:
             # only 'end'
-            if not "size" in query:
+            if "size" not in query:
                 end = query["end"]
                 if end <= MAX_DOCUMENTS - 1:
                     query["size"] = end + 1
@@ -273,20 +278,22 @@ def index():
                 size = query["size"]
                 if end - size + 1 < 0:
                     warnings.append(
-                        f"Starting position would be less than 0: 'end' = {end}, 'size' = {size}. Will return {end+1} documents."
+                        f"Starting position would be less than 0: 'end' = {end}, 'size' = {size}."
+                        + f"Will return {end+1} documents."
                     )
                     query["size"] = end + 1
                     del query["end"]
     else:
-        if not "end" in query:
+        if "end" not in query:
             pass  # Returns 10 documents by default, query['size'] otherwise
         else:
-            if not "size" in query:
+            if "size" not in query:
                 start = query["start"]
                 end = query["end"]
                 if end - start + 1 > MAX_DOCUMENTS:
                     warnings.append(
-                        f"The request would return more than {MAX_DOCUMENTS} documents. Limiting to {MAX_DOCUMENTS}."
+                        f"The request would return more than {MAX_DOCUMENTS} documents."
+                        + f" Limiting to {MAX_DOCUMENTS}."
                     )
                     query["size"] = MAX_DOCUMENTS
                     del query["end"]
@@ -299,7 +306,8 @@ def index():
                 end = query["end"]
                 if end - start + 1 > MAX_DOCUMENTS:
                     warnings.append(
-                        f"The request would return more than {MAX_DOCUMENTS} documents. Limiting to {MAX_DOCUMENTS}."
+                        f"The request would return more than {MAX_DOCUMENTS} documents."
+                        + f" Limiting to {MAX_DOCUMENTS}."
                     )
                     query["size"] = MAX_DOCUMENTS
                     del query["end"]

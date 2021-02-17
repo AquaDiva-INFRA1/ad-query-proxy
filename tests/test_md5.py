@@ -7,7 +7,6 @@ Created on Mon Sep 21 16:26:31 2020
 """
 
 import hashlib
-import re
 
 from query_proxy.ncbi import MD5_MATCHER
 

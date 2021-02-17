@@ -167,7 +167,7 @@ def filter_NCBI_taxonomy(
 
     """
     entries = dict()
-    if not ids is None:
+    if ids is not None:
         for entry in taxonomy2dict(file):
             if not entry["ID"] in ids:
                 continue
