@@ -8,15 +8,7 @@ Created on Mon Sep  7 13:13:14 2020
 
 from datetime import datetime
 
-from elasticsearch_dsl import (
-    Document,
-    Date,
-    Keyword,
-    Text,
-    Short,
-    connections,
-)
-
+from elasticsearch_dsl import Date, Document, Keyword, Short, Text, connections
 from elasticsearch_dsl.field import Field
 
 INDEX = "pubmed"

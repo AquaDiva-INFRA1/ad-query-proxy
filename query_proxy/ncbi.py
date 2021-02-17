@@ -7,28 +7,28 @@ Created on Mon Sep 21 13:37:22 2020
 """
 
 import argparse
-from datetime import datetime
-from ftplib import FTP, error_perm
 import gzip
 import hashlib
 import logging
 import os
-from pathlib import Path
 import re
 import shutil
-from socket import timeout
 import sys
 import tempfile
-from typing import List
 import urllib
+from datetime import datetime
+from ftplib import FTP, error_perm
+from pathlib import Path
+from socket import timeout
+from typing import List
 
 import elasticsearch as es
-from elasticsearch.exceptions import ConnectionTimeout
 import requests
 import spacy
+from elasticsearch.exceptions import ConnectionTimeout
 
 from parsers import pubmed
-from query_proxy.elastic_import import setup, INDEX
+from query_proxy.elastic_import import INDEX, setup
 from query_proxy.tagger import setup_pipeline
 
 MD5_MATCHER = re.compile(b"MD5\\(.+?\\)= ([0-9a-fA-F]{32})")

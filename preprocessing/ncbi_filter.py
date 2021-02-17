@@ -8,10 +8,10 @@ Created on Wed May 15 13:10:06 2019
 @author: Bernd Kampe
 """
 
-from typing import cast, Dict, Iterator, List, Set, Union
-from pathlib import Path
 import logging
 import re
+from pathlib import Path
+from typing import Dict, Iterator, List, Set, Union, cast
 
 logger = logging.getLogger("ncbi")
 

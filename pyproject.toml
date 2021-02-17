@@ -2,3 +2,7 @@
 # Minimum requirements for the build system to execute.
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3

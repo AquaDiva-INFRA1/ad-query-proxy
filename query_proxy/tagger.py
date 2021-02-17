@@ -6,16 +6,16 @@ Created on Fri Jun 19 11:21:10 2020
 @author: Bernd Kampe
 """
 
-from collections import namedtuple
-from functools import cmp_to_key
 import logging
-from pathlib import Path
 import pickle
 import re  # Only used in exception handling
+from collections import namedtuple
+from functools import cmp_to_key
+from pathlib import Path
 from typing import List
 
-from intervaltree import IntervalTree
 import spacy
+from intervaltree import IntervalTree
 from spacy.tokens import Span
 
 Annotation = namedtuple("Annotation", ["name", "label", "start", "end"])

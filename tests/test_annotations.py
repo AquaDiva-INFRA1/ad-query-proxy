@@ -8,9 +8,8 @@ Created on Mon Oct  5 22:01:57 2020
 from os.path import join
 from pathlib import Path
 
-
-from query_proxy.tagger import setup_pipeline
 from query_proxy.ncbi import annotate
+from query_proxy.tagger import setup_pipeline
 
 
 def test_simple_annotations():

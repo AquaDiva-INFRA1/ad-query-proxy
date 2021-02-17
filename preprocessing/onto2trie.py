@@ -7,13 +7,13 @@ Created on Thu Oct  1 12:48:19 2020
 """
 
 import argparse
-from pathlib import Path
 import pickle
 import sys
+from pathlib import Path
 from typing import Dict, List, Tuple
 
-from ahocorasick import Automaton
 import pronto
+from ahocorasick import Automaton
 
 from preprocessing.ncbi_filter import filter_NCBI_taxonomy
 

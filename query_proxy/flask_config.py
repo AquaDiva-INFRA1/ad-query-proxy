@@ -1,6 +1,8 @@
 import logging
 import re
-from elasticsearch_dsl import connections, Search
+
+from elasticsearch_dsl import Search, connections
+
 from .config import read_config
 
 

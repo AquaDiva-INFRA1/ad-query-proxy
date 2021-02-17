@@ -6,16 +6,16 @@ Created on Tue Jun 16 16:27:20 2020
 @author: tech
 """
 
-from collections import namedtuple
-from functools import cmp_to_key
 import logging
 import re  # Only used in exception handling
+from collections import namedtuple
+from functools import cmp_to_key
 from typing import List
 
 from ahocorasick import Automaton
 from intervaltree import IntervalTree
-from spacy.tokens import Span
 from spacy.parts_of_speech import NOUN
+from spacy.tokens import Span
 
 Annotation = namedtuple("Annotation", ["name", "label", "start", "end"])
 
