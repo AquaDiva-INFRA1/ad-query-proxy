@@ -24,7 +24,7 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
         "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application"
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
     ],
-    python_requires='>=3.6',
+    python_requires=">=3.6",
 )

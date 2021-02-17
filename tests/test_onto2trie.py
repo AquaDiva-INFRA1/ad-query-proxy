@@ -18,6 +18,7 @@ def test_onto2dict():
     entries, taxon_keys = onto2trie.onto2dict(ontology)
     assert (len(entries), len(taxon_keys)) == (7, 6)
 
+
 def make_automaton():
     onto_file = join("tests", "resources", "ad-test-mini.obo")
     ontology = pronto.Ontology(onto_file)

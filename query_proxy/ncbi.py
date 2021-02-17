@@ -224,7 +224,9 @@ def annotate(doc: spacy.tokens.doc.Doc) -> str:
         for ent in doc.ents:
             parts.append(doc.text[last : ent.start_char])
             entity = f"[{doc.text[ent.start_char:ent.end_char]}]"
-            candidates = "&".join(urllib.parse.quote(candidate) for candidate in ent._.id_candidates)
+            candidates = "&".join(
+                urllib.parse.quote(candidate) for candidate in ent._.id_candidates
+            )
             parts.append(f"{entity}({candidates})")
             last = ent.end_char
         else:

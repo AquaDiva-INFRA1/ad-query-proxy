@@ -21,12 +21,14 @@ from elasticsearch_dsl.field import Field
 
 INDEX = "pubmed"
 
+
 class Annotated_Text(Field):
     """
     This class extends the Elasticsearch DSL to provide support
     for annotated text as provided by the Mapper Annotated Text Plugin.
     (see https://www.elastic.co/guide/en/elasticsearch/plugins/current/mapper-annotated-text-usage.html)
     """
+
     _param_defs = {
         "fields": {"type": "field", "hash": True},
         "analyzer": {"type": "analyzer"},
@@ -34,6 +36,7 @@ class Annotated_Text(Field):
         "search_quote_analyzer": {"type": "analyzer"},
     }
     name = "annotated_text"
+
 
 # Used to declare the structure of documents and to
 # initialize the Elasticsearch index with the correct data types
@@ -60,6 +63,7 @@ class Bibdoc(Document):
     def save(self, **kwargs):
         self.created_at = datetime.now()
         return super().save(**kwargs)
+
 
 def setup():
     conn = connections.create_connection(hosts=["localhost"])

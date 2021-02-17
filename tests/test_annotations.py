@@ -32,5 +32,6 @@ def test_ambiguous_annotation():
     annotations = annotate(doc)
     # NB: This is still (of course) the wrong kind of mine
     assert (
-        annotations == "We can't rule out that the [mine](ENVO%3A00000076) won't explode."
+        annotations
+        == "We can't rule out that the [mine](ENVO%3A00000076) won't explode."
     )

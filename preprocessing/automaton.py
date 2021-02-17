@@ -9,7 +9,7 @@ Created on Tue Jun 16 16:27:20 2020
 from collections import namedtuple
 from functools import cmp_to_key
 import logging
-import re # Only used in exception handling
+import re  # Only used in exception handling
 from typing import List
 
 from ahocorasick import Automaton
@@ -105,7 +105,7 @@ class ChemTagger:
             if doc.ents:
                 tree = IntervalTree()
                 for ent in doc.ents:
-                    tree[ent.start:ent.end] = ent
+                    tree[ent.start : ent.end] = ent
                 for span in spans:
                     tree.remove_overlap(span.start, span.end)
                     tree.addi(span.start, span.end, span)
@@ -115,22 +115,28 @@ class ChemTagger:
                 try:
                     doc.ents += tuple(spans)
                 except ValueError as e:
-                    if e.args[0].startswith('[E103]'):
+                    if e.args[0].startswith("[E103]"):
                         # Trying to set conflicting doc.ents
                         # Should have been resolved by remove_overlap (ents from same tagger)
                         # and the use of an interval tree (ents from different tagger)
-                        span_re = re.compile(f"'\\((\\d+),\\s(\\d+),\\s'{self.label}'\\)'")
+                        span_re = re.compile(
+                            f"'\\((\\d+),\\s(\\d+),\\s'{self.label}'\\)'"
+                        )
                         message = e.args[0]
                         m = span_re.search(message)
                         if not m is None:
                             start1 = int(m.group(1))
                             end1 = int(m.group(2))
-                            m = span_re.search(message, m.end()+1)
+                            m = span_re.search(message, m.end() + 1)
                             if not m is None:
                                 start2 = int(m.group(1))
                                 end2 = int(m.group(2))
                                 logging.error(e)
-                                logging.error("First span: %s, second span: %s", doc[start1:end1].text, doc[start2:end2].text)
+                                logging.error(
+                                    "First span: %s, second span: %s",
+                                    doc[start1:end1].text,
+                                    doc[start2:end2].text,
+                                )
                             else:
                                 logging.error(e)
                         else:
