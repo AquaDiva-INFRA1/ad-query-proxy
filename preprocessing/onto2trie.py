@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple
 from ahocorasick import Automaton
 import pronto
 
-from ncbi_filter import filter_NCBI_taxonomy
+from preprocessing.ncbi_filter import filter_NCBI_taxonomy
 
 
 def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str]]:
