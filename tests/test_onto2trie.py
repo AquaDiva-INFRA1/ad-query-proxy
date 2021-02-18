@@ -12,14 +12,14 @@ import pronto
 from preprocessing import onto2trie
 
 
-def test_onto2dict():
+def test_onto2dict() -> None:
     onto_file = join("tests", "resources", "ad-test-mini.obo")
     ontology = pronto.Ontology(onto_file)
     entries, taxon_keys = onto2trie.onto2dict(ontology)
     assert (len(entries), len(taxon_keys)) == (7, 6)
 
 
-def make_automaton():
+def make_automaton() -> None:
     onto_file = join("tests", "resources", "ad-test-mini.obo")
     ontology = pronto.Ontology(onto_file)
     entries, _ = onto2trie.onto2dict(ontology)

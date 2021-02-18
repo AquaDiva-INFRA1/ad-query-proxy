@@ -12,7 +12,7 @@ from query_proxy.ncbi import annotate
 from query_proxy.tagger import Tagger
 
 
-def test_simple_annotations():
+def test_simple_annotations() -> None:
     trie_file = Path(join("tests", "resources", "mini-automaton.pickle"))
     nlp = Tagger.setup_pipeline(trie_file, debug=True)
     doc = nlp("Humans have a lot of bacteria living on them.")
@@ -23,7 +23,7 @@ def test_simple_annotations():
     )
 
 
-def test_ambiguous_annotation():
+def test_ambiguous_annotation() -> None:
     trie_file = Path(join("tests", "resources", "mini-automaton.pickle"))
     exceptions = Path(join("resources", "exceptions.txt"))
     nlp = Tagger.setup_pipeline(trie_file, exceptions, debug=True)

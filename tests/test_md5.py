@@ -11,13 +11,15 @@ import hashlib
 from query_proxy.ncbi import MD5_MATCHER
 
 
-def test_ncbi_m5():
+def test_ncbi_m5() -> None:
     """Test if the checksum comparison works"""
     md5file = "tests/resources/dummy.xml.gz.md5"
     target_file = "tests/resources/dummy.xml.gz"
     md5sum = open(md5file, "rb").read()
 
     match = MD5_MATCHER.match(md5sum)
+    if match is None:
+        assert False
     md5 = hashlib.md5()
     try:
         with open(target_file, "rb") as compare_this:
@@ -29,4 +31,8 @@ def test_ncbi_m5():
         print(e)
 
     digest = md5.hexdigest()
-    assert digest == match.group(1).decode("utf-8")
+    result = match.group(1)
+    if result is not None:
+        assert digest == result.decode("utf-8")
+    else:
+        assert False

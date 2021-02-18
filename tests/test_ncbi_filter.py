@@ -11,13 +11,13 @@ from pathlib import Path
 from preprocessing import ncbi_filter
 
 
-def test_basic_filter():
+def test_basic_filter() -> None:
     taxonomy_file = Path(join("tests", "resources", "taxonomy-mini.dat"))
     entries = ncbi_filter.filter_ncbi_taxonomy(taxonomy_file, ["4932", "432564576"])
     assert len(entries) == 1
 
 
-def test_variant_generation():
+def test_variant_generation() -> None:
     taxonomy_file = Path(join("tests", "resources", "taxonomy-mini.dat"))
     entries = list(ncbi_filter.taxonomy2dict(taxonomy_file))
     variants = set()
@@ -27,7 +27,7 @@ def test_variant_generation():
     assert len(variants) == 48
 
 
-def test_taxonomy2dict():
+def test_taxonomy2dict() -> None:
     taxonomy_file = Path(join("tests", "resources", "taxonomy-mini.dat"))
     entries = list(ncbi_filter.taxonomy2dict(taxonomy_file))
     assert len(entries) == 14

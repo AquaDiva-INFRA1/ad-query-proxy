@@ -7,8 +7,10 @@ Created on Mon Sep  7 13:13:14 2020
 """
 
 from datetime import datetime
+from typing import Dict
 
-from elasticsearch_dsl import Date, Document, Keyword, Short, Text, connections
+import elasticsearch
+from elasticsearch_dsl import Date, Document, Keyword, Search, Short, Text, connections
 from elasticsearch_dsl.field import Field
 
 INDEX = "pubmed"
@@ -52,12 +54,12 @@ class Bibdoc(Document):
     class Index:
         name = INDEX
 
-    def save(self, **kwargs):
+    def save(self, **kwargs: Dict) -> Search:
         self.created_at = datetime.now()
         return super().save(**kwargs)
 
 
-def setup():
+def setup() -> elasticsearch.Elasticsearch:
     conn = connections.create_connection(hosts=["localhost"])
     Bibdoc.init(using=conn)
     return conn

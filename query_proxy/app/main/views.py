@@ -9,7 +9,9 @@ import re
 from typing import Dict, List, Tuple
 
 from elasticsearch_dsl import Q
-from flask import abort, current_app, jsonify, request
+from elasticsearch_dsl.query import Query
+from elasticsearch_dsl.response import Response
+from flask import Response, abort, current_app, jsonify, request
 
 from . import main
 
@@ -26,7 +28,7 @@ def compact_id(iri: str) -> str:
     return iri
 
 
-def parse_request(request: str):
+def parse_request(request: str) -> List[Query]:
     query_parts = []
     must = []
     should = []
@@ -69,7 +71,7 @@ def parse_request(request: str):
     return query_parts
 
 
-def parse_request_fallback(request: str):
+def parse_request_fallback(request: str) -> List[Query]:
     query_parts = []
     parts = request.split(",")
     for part in parts:
@@ -220,7 +222,7 @@ def remove_annotations(text: str) -> str:
     return re.subn(annotation_matcher, r"\g<1>", text)[0]
 
 
-def prepare_response(es_response):
+def prepare_response(es_response: Response) -> List[Dict[str, str]]:
     hits = []
     if es_response.hits.total.value != 0:
         for r in es_response:
@@ -250,7 +252,7 @@ def prepare_response(es_response):
 
 
 @main.route("/", methods=["GET", "POST"])
-def index():
+def index() -> Response:
     query, warnings = parse_args(request.args)
 
     # raise 400: Bad Request

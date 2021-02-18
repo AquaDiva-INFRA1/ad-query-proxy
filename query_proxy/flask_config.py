@@ -1,6 +1,7 @@
 import re
 
 from elasticsearch_dsl import Search, connections
+from flask import Flask
 
 from .config import read_config
 
@@ -17,7 +18,7 @@ class Config:
     FIELDS = config["fields"]
 
     @staticmethod
-    def init_app(app):
+    def init_app(app: Flask) -> None:
         pass
 
 

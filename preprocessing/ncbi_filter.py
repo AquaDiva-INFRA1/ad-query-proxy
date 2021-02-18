@@ -172,5 +172,5 @@ def filter_ncbi_taxonomy(
             if not entry["ID"] in ids:
                 continue
             variants = sorted(make_variants(entry))
-            entries[entry["ID"]] = variants
+            entries[cast(str, entry["ID"])] = variants
     return entries

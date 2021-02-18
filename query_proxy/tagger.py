@@ -12,7 +12,7 @@ import re  # Only used in exception handling
 from collections import namedtuple
 from functools import cmp_to_key
 from pathlib import Path
-from typing import List
+from typing import List, Union
 
 import spacy
 from intervaltree import IntervalTree
@@ -63,7 +63,7 @@ class Tagger:
 
     name = "onto_tagger"
 
-    def __init__(self, trie_file: Path, exceptions=None):
+    def __init__(self, trie_file: Path, exceptions: Union[None, Path] = None) -> None:
         """
         Import an Aho-Corasick automaton from a pickled file.
 
@@ -93,7 +93,7 @@ class Tagger:
             else:
                 raise TypeError("exceptions is expected to be a Path.")
 
-    def __call__(self, doc):
+    def __call__(self, doc: spacy.language.Doc) -> spacy.language.Doc:
         """
         Applies the tagger automaton to the text.
 
@@ -120,7 +120,7 @@ class Tagger:
         annotations = self.disambiguate(annotations)
         return self.retokenize(doc, annotations)
 
-    def disambiguate(self, annotations):
+    def disambiguate(self, annotations: List[Annotation]) -> List[Annotation]:
         uniques = set()
         for i, anno in enumerate(annotations):
             if len(anno.label) == 1:
@@ -135,7 +135,9 @@ class Tagger:
                 )
         return annotations
 
-    def retokenize(self, doc, annotations):
+    def retokenize(
+        self, doc: spacy.language.Doc, annotations: List[Annotation]
+    ) -> spacy.language.Doc:
         start = [token.idx for token in doc]
         end = [token.idx + len(token) for token in doc]
         spans = []
@@ -162,7 +164,7 @@ class Tagger:
                 for span in spans:
                     tree.remove_overlap(span.start, span.end)
                     tree.addi(span.start, span.end, span)
-                spans = tuple(
+                spans2tuple = tuple(
                     span
                     for (
                         _,
@@ -170,7 +172,7 @@ class Tagger:
                         span,
                     ) in tree
                 )
-                doc.ents = spans
+                doc.ents = spans2tuple
             else:
                 try:
                     doc.ents += tuple(spans)
@@ -179,9 +181,7 @@ class Tagger:
                         # Trying to set conflicting doc.ents
                         # Should have been resolved by remove_overlap (ents from same tagger)
                         # and the use of an interval tree (ents from different tagger)
-                        span_re = re.compile(
-                            f"'\\((\\d+),\\s(\\d+),\\s'{self.label}'\\)'"
-                        )
+                        span_re = re.compile(f"'\\((\\d+),\\s(\\d+),\\s'{LABEL}'\\)'")
                         message = e.args[0]
                         m = span_re.search(message)
                         if m is not None:
@@ -270,7 +270,9 @@ class Tagger:
         return entity2.end - entity1.end
 
     @staticmethod
-    def setup_pipeline(trie_file: Path, exceptions=None, debug=False):
+    def setup_pipeline(
+        trie_file: Path, exceptions: Union[None, Path] = None, debug: bool = False
+    ) -> spacy.language.Language:
         if debug:
             nlp = spacy.load("en_core_web_sm", disable=["ner", "textcat", "parser"])
             nlp.add_pipe(nlp.create_pipe("sentencizer"))

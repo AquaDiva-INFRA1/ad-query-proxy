@@ -14,13 +14,13 @@ Main function is parse(source).
 #                  PublicationTypeList, VernacularTitle?, ArticleDate*) >
 
 import logging
-from typing import Dict, Iterator, List, Union
+from typing import Dict, Iterator, List, TextIO, Union
 from xml.etree.ElementTree import Element, iterparse
 
 logger = logging.getLogger("ncbi.pubmed")
 
 
-def handle_markup(element: Element):
+def handle_markup(element: Element) -> None:
     # Handle marked up text
     for tag in iter(element):
         if tag.text:
@@ -134,7 +134,7 @@ def extract_journaldata(journal: Element, pmid: str) -> Dict[str, str]:
     return data
 
 
-def parse(source) -> Iterator[Dict[str, str]]:
+def parse(source: TextIO) -> Iterator[Dict[str, str]]:
     context = iterparse(source, events=("start", "end"))
     # turn it into an iterator
     context = iter(context)

@@ -60,17 +60,16 @@ def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str
     return concepts, taxon_keys
 
 
-def make_automaton(concepts):
+def make_automaton(concepts: Dict[str, List[str]]) -> Automaton:
     """Create an Aho-Corasick automaton out of dictionary entries."""
     automaton = Automaton()
-    entries = dict()
+    entries: Dict[str, Tuple[str, ...]] = dict()
     for label, values in concepts.items():
         for v in values:
             if v in entries:
                 dictvalue = list(entries[v])
                 dictvalue.append(label)
-                dictvalue = tuple(dictvalue)
-                entries[v] = dictvalue
+                entries[v] = tuple(dictvalue)
             else:
                 entries[v] = (label,)
 

@@ -20,13 +20,13 @@ from datetime import datetime
 from ftplib import FTP, Error, error_perm
 from pathlib import Path
 from socket import timeout
-from typing import Dict, List, Tuple
+from typing import Any, Dict, Iterator, List, Tuple
 from urllib.parse import quote
 
-import elasticsearch as es
 import requests
 import spacy
 from elasticsearch.exceptions import ConnectionTimeout
+from elasticsearch.helpers import streaming_bulk
 
 from parsers import pubmed
 from query_proxy.elastic_import import INDEX, setup
@@ -82,7 +82,7 @@ class NcbiProcessor:
             return []
         return names
 
-    def process_archives(self, path: Path):
+    def process_archives(self, path: Path) -> None:
         cleanup = None
         if not path.exists():
             self.logger.warning("Directory %s did not exist, will be created.", path)
@@ -182,7 +182,7 @@ class NcbiProcessor:
                 os.unlink(os.path.join(path, archive))
                 continue
             try:
-                for ok, action in es.helpers.streaming_bulk(
+                for ok, action in streaming_bulk(
                     index="pubmed",
                     client=conn,
                     actions=self.index(os.path.join(path, archive)),
@@ -202,7 +202,7 @@ class NcbiProcessor:
         if cleanup is not None:
             cleanup()
 
-    def index(self, archive: str):
+    def index(self, archive: str) -> Iterator[Dict[str, Any]]:
         with gzip.open(archive, "rt", encoding="utf-8") as data:
             for entry in pubmed.parse(data):
                 # Cleanse the text of character combinations that could be
