@@ -9,12 +9,12 @@ from os.path import join
 from pathlib import Path
 
 from query_proxy.ncbi import annotate
-from query_proxy.tagger import setup_pipeline
+from query_proxy.tagger import Tagger
 
 
 def test_simple_annotations():
     trie_file = Path(join("tests", "resources", "mini-automaton.pickle"))
-    nlp = setup_pipeline(trie_file, debug=True)
+    nlp = Tagger.setup_pipeline(trie_file, debug=True)
     doc = nlp("Humans have a lot of bacteria living on them.")
     annotations = annotate(doc)
     assert (
@@ -26,7 +26,7 @@ def test_simple_annotations():
 def test_ambiguous_annotation():
     trie_file = Path(join("tests", "resources", "mini-automaton.pickle"))
     exceptions = Path(join("resources", "exceptions.txt"))
-    nlp = setup_pipeline(trie_file, exceptions, debug=True)
+    nlp = Tagger.setup_pipeline(trie_file, exceptions, debug=True)
     doc = nlp("We can't rule out that the mine won't explode.")
     annotations = annotate(doc)
     # NB: This is still (of course) the wrong kind of mine

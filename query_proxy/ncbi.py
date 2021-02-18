@@ -29,7 +29,7 @@ from elasticsearch.exceptions import ConnectionTimeout
 
 from parsers import pubmed
 from query_proxy.elastic_import import INDEX, setup
-from query_proxy.tagger import setup_pipeline
+from query_proxy.tagger import Tagger
 
 MD5_MATCHER = re.compile(b"MD5\\(.+?\\)= ([0-9a-fA-F]{32})")
 NCBI_SERVER = "ftp.ncbi.nlm.nih.gov"
@@ -38,7 +38,7 @@ BASELINE_DIR = "pubmed/baseline"
 logger = logging.getLogger("ncbi")
 
 
-class NCBI_Processor:
+class NcbiProcessor:
     def __init__(self, trie_file: Path):
         self.logger = logging.getLogger("ncbi")
         dt = datetime.now()
@@ -49,19 +49,19 @@ class NCBI_Processor:
         )
         fh.setFormatter(formatter)
         self.logger.addHandler(fh)
-        self.nlp = setup_pipeline(trie_file)
+        self.nlp = Tagger.setup_pipeline(trie_file)
 
     def list_ncbi_files(self, path: str) -> List[str]:
-        TIMEOUT = 60
+        timeout = 60
         try:
-            ftp = FTP(NCBI_SERVER, timeout=TIMEOUT)
+            ftp = FTP(NCBI_SERVER, timeout=timeout)
         except Exception:
             self.logger.error("Could nor resolve %s", NCBI_SERVER)
             return []
         try:
             reply = ftp.login()
-        except timeout:
-            self.logger.error("Login attempt timed out after %d seconds.", TIMEOUT)
+        except timedout:
+            self.logger.error("Login attempt timed out after %d seconds.", timedout)
             return []
 
         if not reply.startswith("230"):
@@ -76,7 +76,7 @@ class NCBI_Processor:
             return []
         except timeout:
             self.logger.error(
-                "Listing the directory %s timed out after %d seconds.", path, TIMEOUT
+                "Listing the directory %s timed out after %d seconds.", path, timeout
             )
             return []
         return names
@@ -250,7 +250,7 @@ if __name__ == "__main__":
     )
     ARGS = PARSER.parse_args()
     try:
-        Ncbi = NCBI_Processor(ARGS.automaton)
+        Ncbi = NcbiProcessor(ARGS.automaton)
     except OSError as e:
         if e.args[0].startswith("[E050]"):
             logger.error(

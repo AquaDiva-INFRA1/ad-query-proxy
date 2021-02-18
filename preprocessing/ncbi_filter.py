@@ -147,7 +147,7 @@ def make_variants(tax_entry: Dict[str, Union[str, List[str]]]) -> Set[str]:
     return variants
 
 
-def filter_NCBI_taxonomy(
+def filter_ncbi_taxonomy(
     file: Union[Path, str], ids: List[str]
 ) -> Dict[str, List[str]]:
     """

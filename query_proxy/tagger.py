@@ -116,11 +116,11 @@ class Tagger:
                 continue
             annotations.append(Annotation(key, labels, start + 1, end))
         annotations.sort(key=self.EntityKey)
-        annotations = Tagger.remove_overlap(annotations)
-        annotations = Tagger.disambiguate(annotations)
+        annotations = self.remove_overlap(annotations)
+        annotations = self.disambiguate(annotations)
         return self.retokenize(doc, annotations)
 
-    def disambiguate(annotations):
+    def disambiguate(self, annotations):
         uniques = set()
         for i, anno in enumerate(annotations):
             if len(anno.label) == 1:
@@ -210,32 +210,7 @@ class Tagger:
                         retok.merge(doc[span.start : span.end])
         return doc
 
-    def entity_sort(entity1: Annotation, entity2: Annotation) -> int:
-        """
-        A comparison function for Annotations.
-
-        Parameters
-        ----------
-        entity1 : Annotation
-            An Annotation.
-        entity2 : Annotation
-            Another Annotation.
-
-        Returns
-        -------
-        int
-            -1, if entity1 starts sooner
-             1, if entity1 starts later
-             the difference between the end of entity2 and entity1 otherwise.
-
-        """
-        if entity1.start < entity2.start:
-            return -1
-        if entity1.start > entity2.start:
-            return 1
-        return entity2.end - entity1.end
-
-    def remove_overlap(entities: List[Annotation]) -> List[Annotation]:
+    def remove_overlap(self, entities: List[Annotation]) -> List[Annotation]:
         """
         Removes shortes matches.
         E.g. when 'hydrogen peroxide' and 'hydrogen' have overlapping
@@ -268,16 +243,42 @@ class Tagger:
             end = entity.end
         return filtered
 
+    @staticmethod
+    def entity_sort(entity1: Annotation, entity2: Annotation) -> int:
+        """
+        A comparison function for Annotations.
 
-def setup_pipeline(trie_file: Path, exceptions=None, debug=False):
-    if debug:
-        nlp = spacy.load("en_core_web_sm", disable=["ner", "textcat", "parser"])
-        nlp.add_pipe(nlp.create_pipe("sentencizer"))
-    else:
-        nlp = spacy.load("en_core_web_lg", disable=["ner", "textcat", "parser"])
-        nlp.add_pipe(nlp.create_pipe("sentencizer"))
-    logger.info("Initializing tagger")
-    tagger = Tagger(trie_file, exceptions)
-    nlp.add_pipe(tagger, after="tagger")
-    logger.info("Pipeline complete")
-    return nlp
+        Parameters
+        ----------
+        entity1 : Annotation
+            An Annotation.
+        entity2 : Annotation
+            Another Annotation.
+
+        Returns
+        -------
+        int
+            -1, if entity1 starts sooner
+                1, if entity1 starts later
+                the difference between the end of entity2 and entity1 otherwise.
+
+        """
+        if entity1.start < entity2.start:
+            return -1
+        if entity1.start > entity2.start:
+            return 1
+        return entity2.end - entity1.end
+
+    @staticmethod
+    def setup_pipeline(trie_file: Path, exceptions=None, debug=False):
+        if debug:
+            nlp = spacy.load("en_core_web_sm", disable=["ner", "textcat", "parser"])
+            nlp.add_pipe(nlp.create_pipe("sentencizer"))
+        else:
+            nlp = spacy.load("en_core_web_lg", disable=["ner", "textcat", "parser"])
+            nlp.add_pipe(nlp.create_pipe("sentencizer"))
+        logger.info("Initializing tagger")
+        tagger = Tagger(trie_file, exceptions)
+        nlp.add_pipe(tagger, after="tagger")
+        logger.info("Pipeline complete")
+        return nlp

@@ -13,7 +13,7 @@ from preprocessing import ncbi_filter
 
 def test_basic_filter():
     taxonomy_file = Path(join("tests", "resources", "taxonomy-mini.dat"))
-    entries = ncbi_filter.filter_NCBI_taxonomy(taxonomy_file, ["4932", "432564576"])
+    entries = ncbi_filter.filter_ncbi_taxonomy(taxonomy_file, ["4932", "432564576"])
     assert len(entries) == 1
 
 

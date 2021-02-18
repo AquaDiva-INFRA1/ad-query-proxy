@@ -216,8 +216,8 @@ def parse_args(args: Dict) -> Tuple[Dict, List]:
 
 
 def remove_annotations(text: str) -> str:
-    ANNOTATION_MATCHER = current_app.config["ANNOTATION_MATCHER"]
-    return re.subn(ANNOTATION_MATCHER, r"\g<1>", text)[0]
+    annotation_matcher = current_app.config["ANNOTATION_MATCHER"]
+    return re.subn(annotation_matcher, r"\g<1>", text)[0]
 
 
 def prepare_response(es_response):

@@ -14,7 +14,7 @@ from elasticsearch_dsl.field import Field
 INDEX = "pubmed"
 
 
-class Annotated_Text(Field):
+class AnnotatedText(Field):
     """
     This class extends the Elasticsearch DSL to provide support
     for annotated text as provided by the Mapper Annotated Text Plugin.
@@ -34,8 +34,8 @@ class Annotated_Text(Field):
 # initialize the Elasticsearch index with the correct data types
 class Bibdoc(Document):
     author = Keyword(multi=True)
-    title = Annotated_Text()
-    abstract = Annotated_Text()
+    title = AnnotatedText()
+    abstract = AnnotatedText()
     volume = Keyword()
     issue = Keyword()
     pages = Keyword()

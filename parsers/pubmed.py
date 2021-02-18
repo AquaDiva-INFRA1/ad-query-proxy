@@ -51,7 +51,7 @@ def extract_authors(authors: Element) -> List[str]:
     #                    CollectiveName),
     #                   Identifier*, AffiliationInfo*) >
     team = authors.findall("Author")
-    authorList = []
+    author_list = []
     for author in team:
         if "ValidYN" in author.attrib and author.attrib["ValidYN"] == "N":
             continue
@@ -68,9 +68,9 @@ def extract_authors(authors: Element) -> List[str]:
                 if x is not None and x.text is not None
             )
             if not names == "":
-                authorList.append(names)
+                author_list.append(names)
         else:
-            authorList.append(
+            author_list.append(
                 " ".join(
                     x.text
                     for x in [forename, lastname, suffix]
@@ -78,23 +78,23 @@ def extract_authors(authors: Element) -> List[str]:
                 )
             )
     if "CompleteYN" in authors.attrib and authors.attrib["CompleteYN"] == "N":
-        authorList.append("et al.")
-    return authorList
+        author_list.append("et al.")
+    return author_list
 
 
 def extract_mesh_headings(mesh_headings: Element, pmid: str) -> List[str]:
     # <!ELEMENT	MeshHeadingList (MeshHeading+)>
     # <!ELEMENT	MeshHeading (DescriptorName, QualifierName*)>
     headings = mesh_headings.findall("MeshHeading")
-    headingList = []
+    heading_list = []
     for heading in headings:
         name = heading.find("DescriptorName")
         if name is None or name.text is None:
             logging.warning(f"Article {pmid} is missing a descriptor name")
         else:
             name = name.text
-            headingList.append(name)
-    return headingList
+            heading_list.append(name)
+    return heading_list
 
 
 def extract_journaldata(journal: Element, pmid: str) -> Dict[str, str]:

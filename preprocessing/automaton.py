@@ -157,7 +157,7 @@ class ChemTagger:
                         retok.merge(doc[span.start : span.end])
         return doc
 
-    def entity_sort(entity1: Annotation, entity2: Annotation) -> int:
+    def entity_sort(self, entity1: Annotation, entity2: Annotation) -> int:
         """
         A comparison function for Annotations.
 
@@ -182,7 +182,7 @@ class ChemTagger:
             return 1
         return entity2.end - entity1.end
 
-    def remove_overlap(entities: List[Annotation]) -> List[Annotation]:
+    def remove_overlap(self, entities: List[Annotation]) -> List[Annotation]:
         """
         Removes shortes matches.
         E.g. when 'hydrogen peroxide' and 'hydrogen' have overlapping

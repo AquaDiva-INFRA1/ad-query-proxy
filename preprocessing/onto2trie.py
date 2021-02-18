@@ -15,7 +15,7 @@ from typing import Dict, List, Tuple
 import pronto
 from ahocorasick import Automaton
 
-from preprocessing.ncbi_filter import filter_NCBI_taxonomy
+from preprocessing.ncbi_filter import filter_ncbi_taxonomy
 
 
 def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str]]:
@@ -121,7 +121,7 @@ if __name__ == "__main__":
         print(f"ERROR: {e}", file=sys.stderr)
         sys.exit(2)
     concepts, taxon_keys = onto2dict(ontology)
-    variants = filter_NCBI_taxonomy(NCBI, taxon_keys)
+    variants = filter_ncbi_taxonomy(NCBI, taxon_keys)
     for key, values in variants.items():
         concepts["NCBITaxon:" + key] = values
     trie = make_automaton(concepts)
