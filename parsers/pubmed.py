@@ -14,20 +14,20 @@ Main function is parse(source).
 #                  PublicationTypeList, VernacularTitle?, ArticleDate*) >
 
 import logging
-from typing import Dict, List
+from typing import Dict, Iterator, List, Union
 from xml.etree.ElementTree import Element, iterparse
 
 logger = logging.getLogger("ncbi.pubmed")
 
 
-def handle_markup(element):
+def handle_markup(element: Element):
     # Handle marked up text
     for tag in iter(element):
         if tag.text:
             tag.text = "<" + tag.tag + ">" + tag.text + "</" + tag.tag + ">"
 
 
-def extract_abstract(abstract: Element) -> str:
+def extract_abstract(abstract: Element) -> Union[str, None]:
     parts = abstract.findall("AbstractText")
     text = []
     for part in parts:
@@ -89,11 +89,12 @@ def extract_mesh_headings(mesh_headings: Element, pmid: str) -> List[str]:
     heading_list = []
     for heading in headings:
         name = heading.find("DescriptorName")
-        if name is None or name.text is None:
+        if name is None:
             logging.warning(f"Article {pmid} is missing a descriptor name")
+        elif name.text is not None and name.text:
+            heading_list.append(name.text)
         else:
-            name = name.text
-            heading_list.append(name)
+            logging.warning(f"Article {pmid} is missing a descriptor name")
     return heading_list
 
 
@@ -133,7 +134,7 @@ def extract_journaldata(journal: Element, pmid: str) -> Dict[str, str]:
     return data
 
 
-def parse(source) -> Dict[str, str]:
+def parse(source) -> Iterator[Dict[str, str]]:
     context = iterparse(source, events=("start", "end"))
     # turn it into an iterator
     context = iter(context)

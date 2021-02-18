@@ -17,10 +17,11 @@ import sys
 import tempfile
 import urllib
 from datetime import datetime
-from ftplib import FTP, error_perm
+from ftplib import FTP, Error, error_perm
 from pathlib import Path
 from socket import timeout
-from typing import List
+from typing import Dict, List, Tuple
+from urllib.parse import quote
 
 import elasticsearch as es
 import requests
@@ -51,7 +52,7 @@ class NcbiProcessor:
         self.logger.addHandler(fh)
         self.nlp = Tagger.setup_pipeline(trie_file)
 
-    def list_ncbi_files(self, path: str) -> List[str]:
+    def list_ncbi_files(self, path: str) -> List[Tuple[str, Dict[str, str]]]:
         timeout = 60
         try:
             ftp = FTP(NCBI_SERVER, timeout=timeout)
@@ -60,7 +61,7 @@ class NcbiProcessor:
             return []
         try:
             reply = ftp.login()
-        except timedout:
+        except Error as timedout:
             self.logger.error("Login attempt timed out after %d seconds.", timedout)
             return []
 
@@ -74,7 +75,7 @@ class NcbiProcessor:
         except error_perm as e:
             self.logger.error("Could not retrieve list of files in %s: %s", path, e)
             return []
-        except timeout:
+        except Error as timedout:
             self.logger.error(
                 "Listing the directory %s timed out after %d seconds.", path, timeout
             )
@@ -165,6 +166,11 @@ class NcbiProcessor:
             except Exception as e:
                 self.logger.error(e)
             digest = md5sum.hexdigest()
+            if match is None:
+                self.logger.warning(
+                    "Could not find checksum in %s. Entry was: %s.", archive, r.content
+                )
+                continue
             if digest != match.group(1).decode("utf-8"):
                 self.logger.warning(
                     "MD5 checksum of %s did not match. Expected: %s. Was: %s."
@@ -226,9 +232,7 @@ def annotate(doc: spacy.tokens.doc.Doc) -> str:
         for ent in doc.ents:
             parts.append(doc.text[last : ent.start_char])
             entity = f"[{doc.text[ent.start_char:ent.end_char]}]"
-            candidates = "&".join(
-                urllib.parse.quote(candidate) for candidate in ent._.id_candidates
-            )
+            candidates = "&".join(quote(candidate) for candidate in ent._.id_candidates)
             parts.append(f"{entity}({candidates})")
             last = ent.end_char
         else:
