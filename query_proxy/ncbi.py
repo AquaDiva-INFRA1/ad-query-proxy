@@ -253,10 +253,17 @@ if __name__ == "__main__":
         help="Path to a pickled automaton to be used for tagging",
     )
     ARGS = PARSER.parse_args()
+    AUTOMATON = Path(ARGS.automaton)
+    if not AUTOMATON.exists():
+        print(f"ERROR: Input file {AUTOMATON} does not exist.", file=sys.stderr)
+        sys.exit(1)
+    if not AUTOMATON.is_file():
+        print(f"ERROR: Input argument {AUTOMATON} is not a file.", file=sys.stderr)
+        sys.exit(1)
     try:
         Ncbi = NcbiProcessor(ARGS.automaton)
     except OSError as e:
-        if e.args[0].startswith("[E050]"):
+        if str(e).startswith("[E050]"):
             logger.error(
                 "The spaCy language model en_core_web_lg could not be loaded\n"
                 + "Please make sure to correct any spelling mistakes or to issue\n"
