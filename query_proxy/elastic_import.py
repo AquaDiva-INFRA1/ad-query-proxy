@@ -60,6 +60,19 @@ class Bibdoc(Document):
 
 
 def setup() -> elasticsearch.Elasticsearch:
+    """
+    Connect to the running Elasticsearch instance.
+    Initialize the index, if it does not not already exists.
+
+    Raises:
+        elasticsearch.exceptions.RequestError: When the plugin for
+        AnnotatedText is not installed.
+        Make sure 'elasticsearch-plugin install mapper-annotated-text'
+        has been run.
+
+        elasticsearch.exceptions.ConnectionError: When the
+        search engine is not running
+    """
     conn = connections.create_connection(hosts=["localhost"])
     Bibdoc.init(using=conn)
     return conn

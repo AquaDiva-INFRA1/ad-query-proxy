@@ -23,6 +23,7 @@ from socket import timeout
 from typing import Any, Dict, Iterator, List, Tuple
 from urllib.parse import quote
 
+import elasticsearch
 import requests
 import spacy
 from elasticsearch.exceptions import ConnectionTimeout
@@ -126,7 +127,15 @@ class NcbiProcessor:
             done_file.touch()
             processed = []
 
-        conn = setup()
+        try:
+            conn = setup()
+        except (
+            elasticsearch.exceptions.RequestError,
+            elasticsearch.exceptions.ConnectionError,
+        ) as e:
+            logger.error(e)
+            print("There have been errors. Please check the log.", file=sys.stderr)
+            return
         for archive in archives:
             total, _, free = shutil.disk_usage(".")
             if free / total < 0.05:
