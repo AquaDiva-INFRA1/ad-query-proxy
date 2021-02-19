@@ -1,0 +1,45 @@
+# ansible-galaxy install elastic.elasticsearch,7.10.2
+# ansible-galaxy collection install community.general
+---
+- name: Setup Elasticsearch query proxy
+  hosts: es-proxy
+  become: True
+
+  roles:
+  - role: elastic.elasticsearch
+  vars:
+    es_version: 7.10.2
+
+  tasks:
+  - name: Remove previous installations of Mapper Annotated Text plugin
+    community.general.elasticsearch_plugin:
+      name: mapper-annotated-text
+      state: absent
+
+  - name: Install Mapper Annotated Text plugin in Elasticsearch
+    community.general.elasticsearch_plugin:
+      name: mapper-annotated-text
+      state: present
+      version: 7.10.2
+
+  - name: Enable service elasticsearch
+    systemd:
+      name: elasticsearch
+      daemon-reload: yes
+      enabled: yes
+    notify: restart machine
+	
+  - name: Prevent Elasticsearch from being upgraded
+    dpkg_selections:
+      name: elasticsearch
+      selection: hold
+
+  - name: Install curl
+    apt:
+      name: curl
+      update_cache: yes
+
+  handlers:
+  - name: restart machine
+    service: name=elasticsearch state=restarted
+

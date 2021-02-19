@@ -1,0 +1,1 @@
+es-proxy ansible_host=es-proxy.example.com ansible_user=username ansible_python_interpreter=/usr/bin/python3
