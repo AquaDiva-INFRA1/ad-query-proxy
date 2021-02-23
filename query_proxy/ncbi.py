@@ -15,11 +15,9 @@ import re
 import shutil
 import sys
 import tempfile
-import urllib
 from datetime import datetime
 from ftplib import FTP, Error, error_perm
 from pathlib import Path
-from socket import timeout
 from typing import Any, Dict, Iterator, List, Tuple
 from urllib.parse import quote
 
@@ -76,7 +74,7 @@ class NcbiProcessor:
         except error_perm as e:
             self.logger.error("Could not retrieve list of files in %s: %s", path, e)
             return []
-        except Error as timedout:
+        except Error:
             self.logger.error(
                 "Listing the directory %s timed out after %d seconds.", path, timeout
             )
