@@ -8,7 +8,7 @@
   roles:
   - role: elastic.elasticsearch
   vars:
-    es_version: 7.10.2
+    es_version: 7.11.1
 
   tasks:
   - name: Remove previous installations of Mapper Annotated Text plugin
@@ -20,7 +20,7 @@
     community.general.elasticsearch_plugin:
       name: mapper-annotated-text
       state: present
-      version: 7.10.2
+      version: 7.11.1
 
   - name: Enable service elasticsearch
     systemd:
