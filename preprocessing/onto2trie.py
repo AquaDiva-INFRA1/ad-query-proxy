@@ -8,11 +8,13 @@ Created on Thu Oct  1 12:48:19 2020
 
 import argparse
 import pickle
+import re
 import sys
+from collections import defaultdict
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 
-import pronto
+import rdflib
 from ahocorasick import Automaton
 
 from preprocessing.ncbi_filter import filter_ncbi_taxonomy
@@ -27,45 +29,44 @@ def compact_id(iri: str) -> str:
     return iri
 
 
-def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str]]:
+def triples2dict(triples: rdflib.graph.Graph) -> Tuple[Dict[str, Set[str]], Set[str]]:
     """
-
+    Extract all labels and synonyms from a graph of RDF triples.
 
     Parameters
     ----------
-    ontology : pronto.Ontology
-        An ontology to be later turned into a specialized dictionary to be
-        used for Named Entity Recognition
+    triples : rdflib.graph.Graph
+        A Graph of RDF triples to be later turned into a specialized dictionary
+        to be used for Named Entity Recognition
 
     Returns
     -------
-    Tuple[Dict[str, List[str]], List[str]]
-        The first entry of the tuple is a dictionary with lists of all
+    Tuple[Dict[str, Set[str]], Set[str]]
+        The first entry of the tuple is a dictionary with sets of all
         names and synonyms for all keys that are not in the NCBI Taxonomy.
         The second entry is a list of all IDs that originate from the
         NCBI Taxonomy (except the root, if present).
 
     """
-    concepts = dict()
-    taxon_keys = []
-    for key in ontology:
-        if key.startswith("NCBITaxon:") and not key == "NCBITaxon:1":
-            taxon_keys.append(key[10:])
+    triple = (
+        (compact_id(str(s)), str(o))
+        for s, p, o in triples
+        if "label" in p or "Synonym".casefold() in str(p).casefold()
+        if isinstance(s, rdflib.term.URIRef)
+    )
+
+    taxon_keys = set()
+    concepts = defaultdict(set)
+    for key, term in triple:
+        print(key)
+        if key.startswith("NCBITaxon:"):
+            if not key == "NCBITaxon:1":
+                taxon_keys.add(key[10:])
         else:
-            names = set()
-            entry = ontology[key]
-            if entry.name:
-                names.add(entry.name)
-                if not entry.name.isupper():
-                    names.add(entry.name[0].upper() + entry.name[1:])
-            if entry.synonyms:
-                names.update(synonym.description for synonym in entry.synonyms)
-                names.update(
-                    synonym.description[0].upper() + synonym.description[1:]
-                    for synonym in entry.synonyms
-                    if not synonym.description.isupper()
-                )
-            concepts[key] = sorted(names)
+            names = concepts[key]
+            names.add(term)
+            if not term.isupper():
+                names.add(term[0].upper() + term[1:])
     return concepts, taxon_keys
 
 
@@ -105,12 +106,6 @@ if __name__ == "__main__":
     )
     ARGS = PARSER.parse_args()
     INPUT = Path(ARGS.input)
-    if not INPUT.exists():
-        print(f"ERROR: Input file {INPUT} does not exist.", file=sys.stderr)
-        sys.exit(1)
-    if not INPUT.is_file():
-        print(f"ERROR: Input argument {INPUT} is not a file.", file=sys.stderr)
-        sys.exit(1)
     NCBI = Path(ARGS.ncbi)
     if not NCBI.exists():
         print(f"ERROR: Input file {NCBI} does not exist.", file=sys.stderr)
@@ -123,12 +118,14 @@ if __name__ == "__main__":
         print(f"ERROR: Output file {OUTPUT} already exists.", file=sys.stdout)
         sys.exit(1)
     try:
-        with INPUT.open("rb") as onto_input:
-            ontology = pronto.Ontology(onto_input)
-    except KeyError as e:
-        print(f"ERROR: {e}", file=sys.stderr)
-        sys.exit(2)
-    concepts, taxon_keys = onto2dict(ontology)
+        ontology = rdflib.Graph().parse(INPUT)
+    except FileNotFoundError:
+        print(f"ERROR: Input file {INPUT} does not exist.", file=sys.stderr)
+        sys.exit(1)
+    except IsADirectoryError:
+        print(f"ERROR: Input argument {INPUT} is not a file.", file=sys.stderr)
+        sys.exit(1)
+    concepts, taxon_keys = triples2dict(ontology)
     variants = filter_ncbi_taxonomy(NCBI, taxon_keys)
     for key, values in variants.items():
         concepts["NCBITaxon:" + key] = values

@@ -10,8 +10,10 @@ from typing import Dict, List, Tuple
 
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.query import Query
-from elasticsearch_dsl.response import Response
+from elasticsearch_dsl.response import Response as EsResponse
 from flask import Response, abort, current_app, jsonify, request
+
+from preprocessing import compact_id
 
 from . import main
 
@@ -213,7 +215,7 @@ def remove_annotations(text: str) -> str:
     return re.subn(annotation_matcher, r"\g<1>", text)[0]
 
 
-def prepare_response(es_response: Response) -> List[Dict[str, str]]:
+def prepare_response(es_response: EsResponse) -> List[Dict[str, str]]:
     hits = []
     if es_response.hits.total.value != 0:
         for r in es_response:

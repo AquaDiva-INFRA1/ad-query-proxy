@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ad_query_proxy",
-    version="0.5.1",
+    version="0.6.0",
     author="Bernd Kampe",
     author_email="bernd.kampe@uni-jena.de",
     description="This proxy translates ontology IDs into Elasticsearch search terms and queries a specifically prepared index.",
@@ -19,6 +19,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
         "Development Status :: 4 - Beta",
