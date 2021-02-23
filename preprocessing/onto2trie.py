@@ -18,6 +18,15 @@ from ahocorasick import Automaton
 from preprocessing.ncbi_filter import filter_ncbi_taxonomy
 
 
+def compact_id(iri: str) -> str:
+    """Compact an OBO identifier into a prefixed identifier."""
+    # Parts taken from pronto.parsers.rdfxml._compact_id
+    match = re.match("^http://purl.obolibrary.org/obo/([^#_]+)_(.*)$", iri)
+    if match is not None:
+        return ":".join(match.groups())
+    return iri
+
+
 def onto2dict(ontology: pronto.Ontology) -> Tuple[Dict[str, List[str]], List[str]]:
     """
 

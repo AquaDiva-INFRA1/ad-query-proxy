@@ -19,15 +19,6 @@ MAX_DOCUMENTS = 100
 INDEX_LIMIT = 1000
 
 
-# Parts taken from pronto.parsers.rdfxml._compact_id
-def compact_id(iri: str) -> str:
-    """Compact an OBO identifier into a prefixed identifier."""
-    match = re.match("^http://purl.obolibrary.org/obo/([^#_]+)_(.*)$", iri)
-    if match is not None:
-        return ":".join(match.groups())
-    return iri
-
-
 def parse_request(request: str) -> List[Query]:
     query_parts = []
     must = []
