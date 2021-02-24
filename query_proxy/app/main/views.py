@@ -5,20 +5,24 @@ Created on Thu Oct 8 11:29:27 2020
 
 @author: Bernd Kampe
 """
+import logging
 import re
 from typing import Dict, List, Tuple
 
+import elasticsearch
 from elasticsearch_dsl import Q
 from elasticsearch_dsl.query import Query
 from elasticsearch_dsl.response import Response as EsResponse
 from flask import Response, abort, current_app, jsonify, request
 
-from preprocessing import compact_id
+from preprocessing.onto2trie import compact_id
 
 from . import main
 
 MAX_DOCUMENTS = 100
 INDEX_LIMIT = 1000
+
+logger = logging.getLogger("ncbi")
 
 
 def parse_request(request: str) -> List[Query]:
@@ -325,7 +329,11 @@ def index() -> Response:
         prepared_search = prepared_search[query["start"] : query["start"] + 10]
     elif "size" in query:
         prepared_search = prepared_search[: query["size"]]
-    es_response = prepared_search.execute()
+    try:
+        es_response = prepared_search.execute()
+    except elasticsearch.exceptions.NotFoundError as e:
+        current_app.logger.error(e)
+        abort(404, description="Index not found.")
     answer = {}
     answer["hits"] = prepare_response(es_response)
 
@@ -346,7 +354,11 @@ def index() -> Response:
             prepared_search = prepared_search[query["start"] : query["start"] + 10]
         elif "size" in query:
             prepared_search = prepared_search[: query["size"]]
-        es_response = prepared_search.execute()
+        try:
+            es_response = prepared_search.execute()
+        except elasticsearch.exceptions.NotFoundError as e:
+            current_app.logger.error(e)
+            abort(404, description="Index not found.")
         answer = {}
         answer["hits"] = prepare_response(es_response)
 
