@@ -13,7 +13,14 @@ import elasticsearch
 from elasticsearch_dsl import Date, Document, Keyword, Search, Short, Text, connections
 from elasticsearch_dsl.field import Field
 
-INDEX = "pubmed"
+from query_proxy.config import read_config
+
+SETTINGS = read_config()
+INDEX = (
+    SETTINGS["index"]
+    if "index" in SETTINGS and isinstance(SETTINGS["index"], str)
+    else "pubmed"
+)
 
 
 class AnnotatedText(Field):

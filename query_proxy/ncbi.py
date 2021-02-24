@@ -278,8 +278,3 @@ if __name__ == "__main__":
                 + "'python -m spacy download en_core_web_lg' beforehand"
             )
         sys.exit(1)
-    config = read_config()
-    if "index" in config and isinstance(config["index"], str):
-        Ncbi.process_archives(ARGS.download_dir, config["index"])
-    else:
-        Ncbi.process_archives(ARGS.download_dir, "pubmed")
