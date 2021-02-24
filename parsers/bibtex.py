@@ -7,7 +7,7 @@ Created on Mon Apr 13 13:08:13 2020
 """
 
 import logging
-from typing import Any, Dict, Iterator, List, Union, TextIO, Tuple
+from typing import Any, Dict, Iterator, List, TextIO, Tuple, Union
 
 from pybtex.database.input.bibtex import Parser
 from pybtex.exceptions import PybtexError

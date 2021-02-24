@@ -16,7 +16,4 @@ def test_parse() -> None:
             assert bibdict["year"] in ("2019", "2020", "2021")
             assert "publisher" in bibdict
             assert bibdict["publisher"] == "Association for Lorem Ipsum"
-            assert bibdict["author"] == [
-                "Lorem Ipsum",
-                "Lörem Ipßüm"
-            ]
+            assert bibdict["author"] == ["Lorem Ipsum", "Lörem Ipßüm"]
