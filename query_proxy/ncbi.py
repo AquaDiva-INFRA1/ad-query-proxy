@@ -28,6 +28,7 @@ from elasticsearch.exceptions import ConnectionTimeout
 from elasticsearch.helpers import streaming_bulk
 
 from parsers import pubmed
+from query_proxy.config import read_config
 from query_proxy.elastic_import import INDEX, setup
 from query_proxy.tagger import Tagger
 
@@ -81,7 +82,7 @@ class NcbiProcessor:
             return []
         return names
 
-    def process_archives(self, path: Path) -> None:
+    def process_archives(self, path: Path, index: str) -> None:
         cleanup = None
         if not path.exists():
             self.logger.warning("Directory %s did not exist, will be created.", path)
@@ -190,7 +191,7 @@ class NcbiProcessor:
                 continue
             try:
                 for ok, action in streaming_bulk(
-                    index="pubmed",
+                    index=index,
                     client=conn,
                     actions=self.index(os.path.join(path, archive)),
                     raise_on_error=False,
@@ -277,4 +278,8 @@ if __name__ == "__main__":
                 + "'python -m spacy download en_core_web_lg' beforehand"
             )
         sys.exit(1)
-    Ncbi.process_archives(ARGS.download_dir)
+    config = read_config()
+    if "index" in config and isinstance(config["index"], str):
+        Ncbi.process_archives(ARGS.download_dir, config["index"])
+    else:
+        Ncbi.process_archives(ARGS.download_dir, "pubmed")

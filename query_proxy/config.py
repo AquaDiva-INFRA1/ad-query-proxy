@@ -7,11 +7,19 @@ CONFIG = "config.json"
 
 
 def read_config() -> Dict[str, Any]:
-    if exists(CONFIG):
-        with open(CONFIG) as config:
+    """
+    Read JSON configuration file CONFIG.
+
+    Returns:
+        A dictionary containing the addresses of Elasticsearch node,
+        index names and field names in case of success.
+        Will return an empty dictionary when the file could not be found.
+    """
+    try:
+        with open(CONFIG, "rt") as config:
             conf = json.load(config)
-    else:
-        print("Could not find configuration file {0}.".format(CONFIG))
-        sys.exit(1)
+    except (FileNotFoundError, IsADirectoryError) as e:
+        print(f"Could not find configuration file {CONFIG}.", file=sys.stderr)
+        return {}
 
     return conf
