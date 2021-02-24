@@ -8,7 +8,7 @@ Before you get started, you should have set up login via ssh.
 ssh-copy-id user@example.com
 ```
 
-## Setting up [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#virtual-environments)*
+## Setting up [Ansible®&#42;](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#virtual-environments)
 
 Create a virtual environment for Ansible.
 
@@ -116,9 +116,6 @@ This package is not strictly necessary and only included for testing purposes. I
 
 waitress-serve --port=8081 --call 'query_proxy.flask_main:wsgi'
 
-*Ansible is a registered trademark of Red Hat, Inc. in the United States and other countries.
-**Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
-
 ## Get the proxy ready to serve documents
 
 After logging in to the machine (and perhaps setting up a virtual environment), download the project files and install all of its dependencies.
@@ -163,3 +160,7 @@ waitress-serve --port=8080 --call 'query_proxy.flask_main:wsgi'
 ```
 
 Ready!
+
+&#42; Ansible is a registered trademark of Red Hat, Inc. in the United States and other countries.
+
+&#42;&#42;Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
