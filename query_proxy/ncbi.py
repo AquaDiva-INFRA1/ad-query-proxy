@@ -82,7 +82,7 @@ class NcbiProcessor:
             return []
         return names
 
-    def process_archives(self, path: Path, index: str) -> None:
+    def process_archives(self, path: Path) -> None:
         cleanup = None
         if not path.exists():
             self.logger.warning("Directory %s did not exist, will be created.", path)
@@ -191,7 +191,7 @@ class NcbiProcessor:
                 continue
             try:
                 for ok, action in streaming_bulk(
-                    index=index,
+                    index=INDEX,
                     client=conn,
                     actions=self.index(os.path.join(path, archive)),
                     raise_on_error=False,
@@ -278,3 +278,4 @@ if __name__ == "__main__":
                 + "'python -m spacy download en_core_web_lg' beforehand"
             )
         sys.exit(1)
+    Ncbi.process_archives(ARGS.download_dir)
