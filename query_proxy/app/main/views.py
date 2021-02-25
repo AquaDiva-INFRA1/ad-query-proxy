@@ -316,7 +316,9 @@ def index() -> Response:
             del query["start"]
 
     original_request = query["request"]
+    current_app.logger.info("Original reguest: %s", original_request)
     query["request"] = parse_request(query["request"])
+    current_app.logger.debug("Processed reguest: %s", query["request"])
     prepared_search = current_app.config["SEARCH"]
     prepared_search = prepared_search.query(Q({"bool": {"must": query["request"]}}))
     if "sort" in query:
