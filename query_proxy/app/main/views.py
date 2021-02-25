@@ -71,7 +71,7 @@ def parse_request(request: str) -> List[Query]:
                                         {"term": {"title": iri}},
                                         {"term": {"abstract": iri}},
                                     ],
-                                    "minimum_should_match": 1
+                                    "minimum_should_match": 1,
                                 }
                             }
                         )
@@ -95,6 +95,21 @@ def parse_request(request: str) -> List[Query]:
 
 
 def parse_request_fallback(request: str) -> List[Query]:
+    """
+    A more lenient formulation of the search request.
+    Only entities are considered and each term is marked optional.
+    Contrast with parse_request(str).
+
+    Parameters
+    ----------
+    request : str
+        A specifically formatted list of concept tuples
+
+    Returns
+    -------
+    List[Query]
+        Elasticsearch queries for each concept
+    """
     query_parts = []
     parts = request.split(",")
     for part in parts:
@@ -112,7 +127,8 @@ def parse_request_fallback(request: str) -> List[Query]:
                                     "should": [
                                         {"term": {"title": iri}},
                                         {"term": {"abstract": iri}},
-                                    ]
+                                    ],
+                                    "minimum_should_match": 1,
                                 }
                             }
                         )
