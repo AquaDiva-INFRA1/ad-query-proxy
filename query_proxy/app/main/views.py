@@ -26,6 +26,31 @@ logger = logging.getLogger("ncbi")
 
 
 def parse_request(request: str) -> List[Query]:
+    """
+    Parse a request string with the format
+    IRI1a;IRI1b,IRI2a;IRI2b (...)
+
+    Each pair of semicolon-separated IRIs forms a tuple of an entity and its
+    associated characteristic, e.g. a chemical and its concentration.
+    While the entity will be marked as a mandatory term (MUST occur), finding
+    the characteristic in a text is optional (SHOULD occur).
+
+    The characteristics can even be omitted in the request string.
+    A string of the form IRI1,IRI2 (...) is also valid.
+
+    Parts of the request string that don't start with 'http://' will be
+    interpreted as literal strings instead of concepts.
+
+    Parameters
+    ----------
+    request : str
+        A specifically formatted list of concept tuples
+
+    Returns
+    -------
+    List[Query]
+        Elasticsearch queries for each tuple
+    """
     query_parts = []
     must = []
     should = []
