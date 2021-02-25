@@ -45,7 +45,8 @@ def parse_request(request: str) -> List[Query]:
                                     "should": [
                                         {"term": {"title": iri}},
                                         {"term": {"abstract": iri}},
-                                    ]
+                                    ],
+                                    "minimum_should_match": 1
                                 }
                             }
                         )
