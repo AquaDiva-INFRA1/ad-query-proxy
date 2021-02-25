@@ -58,7 +58,6 @@ def triples2dict(triples: rdflib.graph.Graph) -> Tuple[Dict[str, Set[str]], Set[
     taxon_keys = set()
     concepts = defaultdict(set)
     for key, term in triple:
-        print(key)
         if key.startswith("NCBITaxon:"):
             if not key == "NCBITaxon:1":
                 taxon_keys.add(key[10:])
@@ -105,7 +104,6 @@ if __name__ == "__main__":
         "-o", "--output", help="Where the automaton should be written to", type=str
     )
     ARGS = PARSER.parse_args()
-    INPUT = Path(ARGS.input)
     NCBI = Path(ARGS.ncbi)
     if not NCBI.exists():
         print(f"ERROR: Input file {NCBI} does not exist.", file=sys.stderr)
@@ -118,7 +116,7 @@ if __name__ == "__main__":
         print(f"ERROR: Output file {OUTPUT} already exists.", file=sys.stdout)
         sys.exit(1)
     try:
-        ontology = rdflib.Graph().parse(INPUT)
+        ontology = rdflib.Graph().parse(ARGS.input)
     except FileNotFoundError:
         print(f"ERROR: Input file {INPUT} does not exist.", file=sys.stderr)
         sys.exit(1)
