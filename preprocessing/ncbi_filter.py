@@ -148,8 +148,8 @@ def make_variants(tax_entry: Dict[str, Union[str, List[str]]]) -> Set[str]:
 
 
 def filter_ncbi_taxonomy(
-    file: Union[Path, str], ids: List[str]
-) -> Dict[str, List[str]]:
+    file: Union[Path, str], ids: Union[List[str], Set[str]]
+) -> Dict[str, Set[str]]:
     """
     Create a dictionary containing all name variants of specific entries.
 
@@ -171,6 +171,6 @@ def filter_ncbi_taxonomy(
         for entry in taxonomy2dict(file):
             if not entry["ID"] in ids:
                 continue
-            variants = sorted(make_variants(entry))
+            variants = make_variants(entry)
             entries[cast(str, entry["ID"])] = variants
     return entries

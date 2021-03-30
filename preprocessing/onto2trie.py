@@ -56,7 +56,7 @@ def triples2dict(triples: rdflib.graph.Graph) -> Tuple[Dict[str, Set[str]], Set[
     )
 
     taxon_keys = set()
-    concepts = defaultdict(set)
+    concepts: Dict[str, Set[str]] = defaultdict(set)
     for key, term in triple:
         if key.startswith("NCBITaxon:"):
             if not key == "NCBITaxon:1":
@@ -69,7 +69,7 @@ def triples2dict(triples: rdflib.graph.Graph) -> Tuple[Dict[str, Set[str]], Set[
     return concepts, taxon_keys
 
 
-def make_automaton(concepts: Dict[str, List[str]]) -> Automaton:
+def make_automaton(concepts: Dict[str, Set[str]]) -> Automaton:
     """Create an Aho-Corasick automaton out of dictionary entries."""
     automaton = Automaton()
     entries: Dict[str, Tuple[str, ...]] = dict()

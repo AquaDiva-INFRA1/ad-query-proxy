@@ -150,7 +150,7 @@ class NcbiProcessor:
             if not archive + ".md5" in md5:
                 self.logger.warn("No md5 checksum available for %s", archive)
             archive_url = f"https://{NCBI_SERVER}/{UPDATE_DIR if update else BASELINE_DIR}/{archive}"
-            for retry in range(60, 120, 180, 240, 300):
+            for retry in [60, 120, 180, 240, 300]:
                 try:
                     r = requests.get(archive_url, stream=True)
                 except requests.exceptions.ConnectionError as e:

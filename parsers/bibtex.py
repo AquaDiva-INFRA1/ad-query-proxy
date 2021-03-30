@@ -13,7 +13,7 @@ from pybtex.database.input.bibtex import Parser
 from pybtex.exceptions import PybtexError
 
 
-def format_person(item: Tuple, datadict: Dict):
+def format_person(item: Tuple, datadict: Dict) -> None:
     """Format all authors and editors."""
     # Elasticsearch field names are case sensitive,
     # while BibTeX field names are not
