@@ -5,7 +5,7 @@ Created on Thu May 28 16:06:14 2020
 
 @author: Ronja Karmann
 """
-from parsers.bibtex import Parser, parse
+from parsers.bibtex import parse
 
 
 def test_parse() -> None:

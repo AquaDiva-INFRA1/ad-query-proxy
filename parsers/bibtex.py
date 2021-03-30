@@ -7,13 +7,13 @@ Created on Mon Apr 13 13:08:13 2020
 """
 
 import logging
-from typing import Any, Dict, Iterator, List, TextIO, Tuple, Union
+from typing import Dict, Iterator, List, TextIO, Tuple, Union
 
 from pybtex.database.input.bibtex import Parser
 from pybtex.exceptions import PybtexError
 
 
-def formatPerson(item: Tuple, datadict: Dict):
+def format_person(item: Tuple, datadict: Dict):
     """Format all authors and editors."""
     # Elasticsearch field names are case sensitive,
     # while BibTeX field names are not
@@ -44,7 +44,7 @@ def parse(
                 fieldname = field[0].lower()
                 datadict[fieldname] = field[1]
             for item in entry.persons.items():
-                formatPerson(item, datadict)
+                format_person(item, datadict)
             yield datadict
     except PybtexError as p:
         logging.error(

@@ -1,6 +1,5 @@
 import json
 import sys
-from os.path import exists
 from typing import Any, Dict
 
 CONFIG = "config.json"
@@ -18,7 +17,7 @@ def read_config() -> Dict[str, Any]:
     try:
         with open(CONFIG, "rt") as config:
             conf = json.load(config)
-    except (FileNotFoundError, IsADirectoryError) as e:
+    except (FileNotFoundError, IsADirectoryError):
         print(f"Could not find configuration file {CONFIG}.", file=sys.stderr)
         return {}
 

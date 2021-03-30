@@ -29,7 +29,6 @@ from elasticsearch.exceptions import ConnectionTimeout
 from elasticsearch.helpers import streaming_bulk
 
 from parsers import pubmed
-from query_proxy.config import read_config
 from query_proxy.elastic_import import INDEX, setup
 from query_proxy.tagger import Tagger
 

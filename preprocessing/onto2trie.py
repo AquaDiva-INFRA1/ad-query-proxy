@@ -118,10 +118,10 @@ if __name__ == "__main__":
     try:
         ontology = rdflib.Graph().parse(ARGS.input)
     except FileNotFoundError:
-        print(f"ERROR: Input file {INPUT} does not exist.", file=sys.stderr)
+        print(f"ERROR: Input file {ARGS.input} does not exist.", file=sys.stderr)
         sys.exit(1)
     except IsADirectoryError:
-        print(f"ERROR: Input argument {INPUT} is not a file.", file=sys.stderr)
+        print(f"ERROR: Input argument {ARGS.input} is not a file.", file=sys.stderr)
         sys.exit(1)
     concepts, taxon_keys = triples2dict(ontology)
     variants = filter_ncbi_taxonomy(NCBI, taxon_keys)
