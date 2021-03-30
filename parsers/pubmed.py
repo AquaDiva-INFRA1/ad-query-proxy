@@ -142,8 +142,8 @@ def parse(source: TextIO) -> Iterator[Dict[str, str]]:
     event, root = next(context)
 
     for event, elem in context:
-        article = dict()
         if event == "end" and elem.tag == "PubmedArticle":
+            article = {}
             pmid = elem.find(".//PMID")
             if pmid is None or pmid.text is None:
                 logging.warning("Article without PMID occurred. Skipped.")
@@ -224,3 +224,13 @@ def parse(source: TextIO) -> Iterator[Dict[str, str]]:
 
             yield article
             root.clear()
+        elif event == "end" and elem.tag == "DeleteCitation":
+            pmids = elem.findall(".//PMID")
+            for pmid in pmids:
+                article = {}
+                article["PMID"] = pmid
+                article["Version"] = (
+                    pmid.attrib["Version"] if "Version" in pmid.attrib else 1
+                )
+                article["action"] = "delete"
+                yield article
