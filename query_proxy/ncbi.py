@@ -15,6 +15,7 @@ import re
 import shutil
 import sys
 import tempfile
+import time
 from datetime import datetime
 from ftplib import FTP, Error, error_perm
 from pathlib import Path
@@ -35,6 +36,7 @@ from query_proxy.tagger import Tagger
 MD5_MATCHER = re.compile(b"MD5\\(.+?\\)= ([0-9a-fA-F]{32})")
 NCBI_SERVER = "ftp.ncbi.nlm.nih.gov"
 BASELINE_DIR = "pubmed/baseline"
+UPDATE_DIR = "pubmed/updatefiles"
 
 logger = logging.getLogger("ncbi")
 
@@ -82,7 +84,7 @@ class NcbiProcessor:
             return []
         return names
 
-    def process_archives(self, path: Path) -> None:
+    def process_archives(self, path: Path, update: bool = False) -> None:
         cleanup = None
         if not path.exists():
             self.logger.warning("Directory %s did not exist, will be created.", path)
@@ -125,14 +127,13 @@ class NcbiProcessor:
         else:
             done_file.touch()
             processed = []
-
         try:
             conn = setup()
         except (
             elasticsearch.exceptions.RequestError,
             elasticsearch.exceptions.ConnectionError,
         ) as e:
-            logger.error(e)
+            self.logger.error(e)
             print("There have been errors. Please check the log.", file=sys.stderr)
             return
         for archive in archives:
@@ -149,12 +150,18 @@ class NcbiProcessor:
                 continue
             if not archive + ".md5" in md5:
                 self.logger.warn("No md5 checksum available for %s", archive)
-            archive_url = f"https://{NCBI_SERVER}/{BASELINE_DIR}/{archive}"
-            try:
-                r = requests.get(archive_url, stream=True)
-            except requests.exceptions.ConnectionError as e:
-                self.logger.warning(e)
-                continue
+            archive_url = f"https://{NCBI_SERVER}/{UPDATE_DIR if update else BASELINE_DIR}/{archive}"
+            for retry in range(60, 120, 180, 240, 300):
+                try:
+                    r = requests.get(archive_url, stream=True)
+                except requests.exceptions.ConnectionError as e:
+                    self.logger.warning(e)
+                    time.sleep(retry)
+                else:
+                    break
+            else:
+                # Connectivity issue persists, give up for now
+                break
             with open(os.path.join(path, archive), "wb") as fd:
                 for chunk in r.iter_content(chunk_size=1_048_576):
                     fd.write(chunk)
@@ -188,6 +195,10 @@ class NcbiProcessor:
                     digest,
                 )
                 os.unlink(os.path.join(path, archive))
+                # Updates should be done in a strictly ascending fashion
+                # Try again later
+                if update:
+                    break
                 continue
             try:
                 for ok, action in streaming_bulk(
@@ -260,6 +271,9 @@ if __name__ == "__main__":
         type=Path,
         help="Path to a pickled automaton to be used for tagging",
     )
+    PARSER.add_argument(
+        "-u", "--update", help="Import daily update files", action="store_true"
+    )
     ARGS = PARSER.parse_args()
     AUTOMATON = Path(ARGS.automaton)
     if not AUTOMATON.exists():
@@ -278,4 +292,4 @@ if __name__ == "__main__":
                 + "'python -m spacy download en_core_web_lg' beforehand"
             )
         sys.exit(1)
-    Ncbi.process_archives(ARGS.download_dir)
+    Ncbi.process_archives(ARGS.download_dir, ARGS.update)
