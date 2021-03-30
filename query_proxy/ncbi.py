@@ -158,7 +158,8 @@ class NcbiProcessor:
                     self.logger.warning(e)
                     time.sleep(retry)
                 else:
-                    break
+                    if update:
+                        break
             else:
                 # Connectivity issue persists, give up for now
                 break
