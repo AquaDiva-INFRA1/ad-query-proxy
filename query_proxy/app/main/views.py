@@ -5,7 +5,6 @@ Created on Thu Oct 8 11:29:27 2020
 
 @author: Bernd Kampe
 """
-import logging
 import re
 from typing import Dict, List, Tuple
 
@@ -21,8 +20,6 @@ from . import main
 
 MAX_DOCUMENTS = 100
 INDEX_LIMIT = 1000
-
-logger = logging.getLogger("ncbi")
 
 
 def parse_request(request: str) -> List[Query]:
@@ -358,9 +355,9 @@ def index() -> Response:
             del query["start"]
 
     original_request = query["request"]
-    current_app.logger.info("Original reguest: %s", original_request)
+    current_app.logger.info("Original request: %s", original_request)
     query["request"] = parse_request(query["request"])
-    current_app.logger.debug("Processed reguest: %s", query["request"])
+    current_app.logger.debug("Processed request: %s", query["request"])
     prepared_search = current_app.config["SEARCH"]
     prepared_search = prepared_search.query(Q({"bool": {"must": query["request"]}}))
     if "sort" in query:
@@ -383,7 +380,7 @@ def index() -> Response:
 
     # We switch to ORing queries, if ANDing did not result in any hits
     if not answer["hits"]:
-        query["request"] = parse_request_fallback(query["request"])
+        query["request"] = parse_request_fallback(original_request)
         prepared_search = current_app.config["SEARCH"]
         prepared_search = prepared_search.query(
             Q({"bool": {"should": query["request"]}})
