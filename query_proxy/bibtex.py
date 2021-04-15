@@ -72,7 +72,7 @@ class BibtexProcessor:
                 for ok, action in streaming_bulk(
                     index=INDEX,
                     client=conn,
-                    actions=self.index(os.path.join(path, bibref)),
+                    actions=self.index(bibref),
                     raise_on_error=False,
                     request_timeout=60,
                 ):
