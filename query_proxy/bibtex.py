@@ -67,7 +67,7 @@ class BibtexProcessor:
                     bibref,
                 )
                 break
-            
+
             try:
                 for ok, action in streaming_bulk(
                     index=INDEX,
@@ -98,11 +98,13 @@ class BibtexProcessor:
                 if "abstract" in entry:
                     doc = self.nlp(entry["abstract"].replace("](", "] ("))
                     entry["abstract"] = annotate(doc)
-                doc = {
-                    "_op_type": "index",
-                    "_index": INDEX,
-                    "_id": entry["id"]
-                }
+                if "doi" in entry and "url" not in entry:
+                    doi = entry["doi"]
+                    if doi.startswith("http://") or doi.startswith("https://"):
+                        entry["url"] = doi
+                    else:
+                        entry["url"] = "https://dx.doi.org/" + doi
+                doc = {"_op_type": "index", "_index": INDEX, "_id": entry["id"]}
                 doc["_source"] = entry
                 yield doc
 
@@ -127,7 +129,9 @@ def annotate(doc: spacy.tokens.doc.Doc) -> str:
 if __name__ == "__main__":
     PARSER = argparse.ArgumentParser("Process BibTeX")
     PARSER.add_argument(
-        "bibtex_dir", type=Path, help="Directory containing the bibliographic references"
+        "bibtex_dir",
+        type=Path,
+        help="Directory containing the bibliographic references",
     )
     PARSER.add_argument(
         "automaton",
