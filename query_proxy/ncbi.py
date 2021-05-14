@@ -45,13 +45,15 @@ class NcbiProcessor:
         self.logger = logging.getLogger("ncbi")
         dt = datetime.now()
         fh = logging.FileHandler(f"{dt.strftime('%Y%m%d-%H%M%S')}.log")
-        fh.setLevel(logging.WARNING)
+        fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
         fh.setFormatter(formatter)
         self.logger.addHandler(fh)
+        self.logger.debug("Setting up pipeline")
         self.nlp = Tagger.setup_pipeline(trie_file)
+        self.logger.debug("Pipeline has been set up")
 
     def list_ncbi_files(self, path: str) -> List[Tuple[str, Dict[str, str]]]:
         timeout = 60
@@ -103,7 +105,7 @@ class NcbiProcessor:
                 "Getting the list of files from the server failed. Stopping now."
             )
             return
-
+        logger.debug("Received list of filenames")
         md5 = set(
             name[0]
             for name in filenames
@@ -118,7 +120,6 @@ class NcbiProcessor:
             and name[1]["type"] == "file"
             and name[0].endswith("xml.gz")
         )
-
         done_file = Path("processed.log")
         if done_file.exists():
             with done_file.open("rt") as done:
@@ -150,6 +151,7 @@ class NcbiProcessor:
             if not archive + ".md5" in md5:
                 self.logger.warn("No md5 checksum available for %s", archive)
             archive_url = f"https://{NCBI_SERVER}/{UPDATE_DIR if update else BASELINE_DIR}/{archive}"
+            self.logger.debug("Processing %s", archive_url)
             for retry in [60, 120, 180, 240, 300]:
                 try:
                     r = requests.get(archive_url, stream=True)
@@ -157,8 +159,7 @@ class NcbiProcessor:
                     self.logger.warning(e)
                     time.sleep(retry)
                 else:
-                    if update:
-                        break
+                    break
             else:
                 # Connectivity issue persists, give up for now
                 break
@@ -200,6 +201,7 @@ class NcbiProcessor:
                 if update:
                     break
                 continue
+            self.logger.debug("Indexing")
             try:
                 for ok, action in streaming_bulk(
                     index=INDEX,
@@ -224,6 +226,8 @@ class NcbiProcessor:
     def index(self, archive: str) -> Iterator[Dict[str, Any]]:
         with gzip.open(archive, "rt", encoding="utf-8") as data:
             for entry in pubmed.parse(data):
+                if "action" in entry and entry["action"] == "delete":
+                    continue
                 # Cleanse the text of character combinations that could be
                 # mistaken for MarkDown URLs. This will prevent the
                 # Mapper Annotated Text plugin from throwing an IllegalArgumentException.
@@ -292,4 +296,5 @@ if __name__ == "__main__":
                 + "'python -m spacy download en_core_web_lg' beforehand"
             )
         sys.exit(1)
+    logger.debug("Spacy model has been loaded. Ready to process archives.")
     Ncbi.process_archives(ARGS.download_dir, ARGS.update)
