@@ -142,7 +142,7 @@ wget ftp://ftp.ebi.ac.uk/pub/databases/taxonomy/taxonomy.dat
 python -m preprocessing.onto2trie --input ../ad-ontology.owl --ncbi taxonomy.dat --output ad-tagger.pickle
 ```
 
-### 2. Index the PubMed/MEDLINE baseline
+### 2a. Index the PubMed/MEDLINE baseline
 
 You can then use the dictionary tagger to populate a search index with processed PubMed/MEDLINE documents:
 
@@ -152,6 +152,16 @@ python -m query_proxy.ncbi temp ad-tagger.pickle&
 ```
 
 As the Python process will take a long time to index all available baseline documents, it is best to start it in the background. Starting it in a terminal multiplexer is also highly recommended.
+
+### 2b. Index bibliographic references
+
+Alternatively, the bibtex module of the query proxy allows you to index any bibliographic references in BibTeX format.
+If you want to run several proxies at the same time, make sure to change the "index" field in config.json to something unique for every process.
+
+```bash
+cp path/to/bibtex-files/*.bib bib_dir
+python -m query_proxy.bibtex bib_dir ad-tagger.pickle&
+```
 
 ### 3. Start a web server
 
