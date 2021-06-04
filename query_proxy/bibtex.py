@@ -104,6 +104,11 @@ class BibtexProcessor:
                         entry["url"] = doi
                     else:
                         entry["url"] = "https://dx.doi.org/" + doi
+                # This is a quick fix for the data portal,
+                # so that the mapping of the Elasticsearch index
+                # does not have to change
+                if entry["entrytype"] == "inproceedings" and "booktitle" in entry:
+                    entry["journal"] = entry["booktitle"]
                 doc = {"_op_type": "index", "_index": INDEX, "_id": entry["id"]}
                 doc["_source"] = entry
                 yield doc
