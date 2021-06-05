@@ -6,3 +6,5 @@ The semantic search in the [AquaDiva](https://www.aquadiva.uni-jena.de/) data po
 To set up the proxy, please follow the instructions in the INSTALL.MD.
 
 Elasticsearch is a trademark of Elasticsearch BV, registered in the U.S. and in other countries.
+
+This work has been funded by the German Research Foundation (DFG) as part of the project D01 in the Collaborative Research Center (CRC) 1076 “AquaDiva”.
