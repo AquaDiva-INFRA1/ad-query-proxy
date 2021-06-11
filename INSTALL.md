@@ -121,7 +121,7 @@ waitress-serve --port=8081 --call 'query_proxy.flask_main:wsgi'
 After logging in to the machine (and perhaps setting up a virtual environment), download the project files and install all of its dependencies.
 
 ```bash
-git clone https://github.com/JULIELab/ad-query-proxy.git
+git clone https://github.com/AquaDiva-INFRA1/ad-query-proxy.git
 cd ad-query-proxy
 python -m pip install -r requirements.txt
 ```
